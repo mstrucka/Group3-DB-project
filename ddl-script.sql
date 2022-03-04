@@ -11,13 +11,13 @@ create table if not exists courses
 (
     id          int auto_increment
         primary key,
-    title       varchar(45) not null,
-    description varchar(45) null,
-    level       varchar(45) not null,
-    price       decimal     not null,
-    sale        tinyint(1)  null,
-    category    varchar(45) not null,
-    lecturer    int         null,
+    title       varchar(45)    not null,
+    description varchar(500)   null,
+    level       varchar(45)    not null,
+    price       decimal(10, 2) not null,
+    sale        tinyint(1)     null,
+    category    varchar(45)    not null,
+    lecturer    int            null,
     constraint lecturer_id
         foreign key (lecturer) references lecturers (id)
             on update cascade on delete cascade
@@ -91,9 +91,9 @@ create table if not exists students
 
 create table if not exists enrollments
 (
-    student_id      int  not null,
-    course_id       int  not null,
-    enrollment_date date not null,
+    student_id      int                                not null,
+    course_id       int                                not null,
+    enrollment_date datetime default CURRENT_TIMESTAMP not null,
     primary key (student_id, course_id),
     constraint enrollment_course
         foreign key (course_id) references courses (id)
