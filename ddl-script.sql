@@ -1,108 +1,166 @@
-create table if not exists lecturers
-(
-    id        int auto_increment
-        primary key,
-    resume    blob        null,
-    firstName varchar(45) not null,
-    lastName  varchar(45) not null
-);
+-- MySQL Workbench Forward Engineering
 
-create table if not exists courses
-(
-    id          int auto_increment
-        primary key,
-    title       varchar(45)    not null,
-    description varchar(500)   null,
-    level       varchar(45)    not null,
-    price       decimal(10, 2) not null,
-    sale        tinyint(1)     null,
-    category    varchar(45)    not null,
-    lecturer    int            null,
-    constraint lecturer_id
-        foreign key (lecturer) references lecturers (id)
-            on update cascade on delete cascade
-);
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
-create index lecturer_id_idx
-    on courses (lecturer);
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
 
-create index title_index
-    on courses (title);
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+USE `mydb` ;
 
-create table if not exists lectures
-(
-    id          int auto_increment
-        primary key,
-    title       varchar(45) not null,
-    description varchar(45) null,
-    price       decimal     not null
-);
+-- -----------------------------------------------------
+-- Table `mydb`.`Users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Users` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NOT NULL,
+  `lastName` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `password_hash` VARCHAR(45) NOT NULL,
+  `description` VARCHAR(45) NULL,
+  `headline` VARCHAR(45) NULL,
+  `school` VARCHAR(45) NULL,
+  `education` VARCHAR(45) NULL,
+  `is_student` BIT(1) NOT NULL,
+  `dob` DATE NOT NULL,
+  PRIMARY KEY (`id`, `firstName`))
+ENGINE = InnoDB;
 
-create table if not exists courselectures
-(
-    course_id  int not null,
-    lecture_id int not null,
-    primary key (course_id, lecture_id),
-    constraint course_id
-        foreign key (course_id) references courses (id)
-            on update cascade on delete cascade,
-    constraint course_lectures_lecture_id
-        foreign key (lecture_id) references lectures (id)
-            on update cascade on delete cascade
-);
 
-create index lecture_id_idx
-    on courselectures (lecture_id);
+-- -----------------------------------------------------
+-- Table `mydb`.`Courses`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Courses` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(45) NOT NULL,
+  `description` VARCHAR(45) NULL,
+  `level` VARCHAR(45) NOT NULL,
+  `price` DECIMAL NOT NULL,
+  `sale` TINYINT(1) NULL,
+  `category` VARCHAR(45) NOT NULL,
+  `lecturer` INT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `title_index` (`title` ASC) VISIBLE,
+  INDEX `lecturer_id_idx` (`lecturer` ASC) VISIBLE,
+  CONSTRAINT `lecturer_id`
+    FOREIGN KEY (`lecturer`)
+    REFERENCES `mydb`.`Users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
 
-create table if not exists resources
-(
-    id   int auto_increment
-        primary key,
-    type varchar(45) not null,
-    name varchar(45) null
-);
 
-create table if not exists lectureresources
-(
-    resource_id int not null,
-    lecture_id  int not null,
-    primary key (resource_id, lecture_id),
-    constraint lecture_id
-        foreign key (lecture_id) references lectures (id)
-            on update cascade on delete cascade,
-    constraint resource_id
-        foreign key (resource_id) references resources (id)
-            on update cascade on delete cascade
-);
+-- -----------------------------------------------------
+-- Table `mydb`.`Lectures`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Lectures` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` VARCHAR(45) NOT NULL,
+  `description` VARCHAR(45) NULL,
+  `price` DECIMAL NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
-create index lecture_id_idx
-    on lectureresources (lecture_id);
 
-create table if not exists students
-(
-    id        int auto_increment
-        primary key,
-    school    varchar(45) null,
-    education varchar(45) null,
-    firstName varchar(45) not null,
-    lastName  varchar(45) not null,
-    dob       date        not null
-);
+-- -----------------------------------------------------
+-- Table `mydb`.`Resources`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Resources` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
 
-create table if not exists enrollments
-(
-    student_id      int                                not null,
-    course_id       int                                not null,
-    enrollment_date datetime default CURRENT_TIMESTAMP not null,
-    primary key (student_id, course_id),
-    constraint enrollment_course
-        foreign key (course_id) references courses (id)
-            on update cascade on delete cascade,
-    constraint enrollment_student
-        foreign key (student_id) references students (id)
-            on update cascade on delete cascade
-);
 
-create index enrollment_course_idx
-    on enrollments (course_id);
+-- -----------------------------------------------------
+-- Table `mydb`.`LectureResources`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`LectureResources` (
+  `resource_id` INT NOT NULL,
+  `lecture_id` INT NOT NULL,
+  PRIMARY KEY (`resource_id`, `lecture_id`),
+  INDEX `lecture_id_idx` (`lecture_id` ASC) VISIBLE,
+  CONSTRAINT `resource_id`
+    FOREIGN KEY (`resource_id`)
+    REFERENCES `mydb`.`Resources` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `resource_lecture_id`
+    FOREIGN KEY (`lecture_id`)
+    REFERENCES `mydb`.`Lectures` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
 
+
+-- -----------------------------------------------------
+-- Table `mydb`.`CourseLectures`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`CourseLectures` (
+  `course_id` INT NOT NULL,
+  `lecture_id` INT NOT NULL,
+  PRIMARY KEY (`course_id`, `lecture_id`),
+  INDEX `lecture_id_idx` (`lecture_id` ASC) VISIBLE,
+  CONSTRAINT `course_id`
+    FOREIGN KEY (`course_id`)
+    REFERENCES `mydb`.`Courses` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `course_lecture_id`
+    FOREIGN KEY (`lecture_id`)
+    REFERENCES `mydb`.`Lectures` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Payments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Payments` (
+  `id` INT NOT NULL,
+  `date` DATETIME NULL,
+  `is_refund` BIT(1) NULL,
+  `total` DECIMAL NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Enrollments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Enrollments` (
+  `student_id` INT NOT NULL,
+  `course_id` INT NOT NULL,
+  `payment_id` INT NOT NULL,
+  PRIMARY KEY (`student_id`, `course_id`, `payment_id`),
+  INDEX `enrollment_course_idx` (`course_id` ASC) VISIBLE,
+  INDEX `enrollment_payment_idx` (`payment_id` ASC) VISIBLE,
+  CONSTRAINT `enrollment_course`
+    FOREIGN KEY (`course_id`)
+    REFERENCES `mydb`.`Courses` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `enrollment_student`
+    FOREIGN KEY (`student_id`)
+    REFERENCES `mydb`.`Users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `enrollment_payment`
+    FOREIGN KEY (`payment_id`)
+    REFERENCES `mydb`.`Payments` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
