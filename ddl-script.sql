@@ -39,7 +39,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `mydb`.`Courses` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NOT NULL,
-  `description` VARCHAR(45) NULL,
+  `description` VARCHAR(500) NULL,
   `level` VARCHAR(45) NOT NULL,
   `price` DECIMAL NOT NULL,
   `sale` TINYINT(1) NULL,
