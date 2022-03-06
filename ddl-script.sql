@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Courses` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NOT NULL,
   `description` VARCHAR(500) NULL,
-  `level` VARCHAR(45) NOT NULL,
+  `level` INT(1) NOT NULL,
   `price` DECIMAL NOT NULL,
-  `sale` TINYINT(1) NULL,
+  `platform_sale` TINYINT(1) NULL,
   `category` VARCHAR(45) NOT NULL,
   `lecturer` INT NULL,
   PRIMARY KEY (`id`),
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Lectures` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NOT NULL,
   `description` VARCHAR(45) NULL,
-  `price` DECIMAL NOT NULL,
+  `index` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -156,6 +156,21 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Enrollments` (
   CONSTRAINT `enrollment_payment`
     FOREIGN KEY (`payment_id`)
     REFERENCES `mydb`.`Payments` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`CoursesOfTheDay`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`CoursesOfTheDay` (
+  `course_id` INT NOT NULL,
+  `date` DATE NOT NULL,
+  PRIMARY KEY (`course_id`, `date`),
+  CONSTRAINT `course_course_of_day`
+    FOREIGN KEY (`course_id`)
+    REFERENCES `mydb`.`Courses` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
