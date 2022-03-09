@@ -14,6 +14,10 @@ end
 
 CREATE EVENT IF NOT EXISTS selectRandomCourse
 ON SCHEDULE EVERY 1 DAY STARTS (CURRENT_DATE + INTERVAL 1 DAY + INTERVAL 1 HOUR)
-DO
+DO begin
+	declare courseId int;
+    select id into courseId from courses order by rand() limit 1;
+    
 	insert into coursesoftheday (course_id, date)
-	select id, CURRENT_DATE from courses order by rand() limit 1;
+	values(courseId, CURRENT_DATE);
+end
