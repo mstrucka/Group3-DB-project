@@ -48,6 +48,9 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Courses` (
   PRIMARY KEY (`id`),
   INDEX `title_index` (`title` ASC) VISIBLE,
   INDEX `lecturer_id_idx` (`lecturer` ASC) VISIBLE,
+  INDEX `course_title_price_idx` (`title` DESC, `price` DESC),
+  INDEX `course_category_idx` (`category`),
+  
   CONSTRAINT `lecturer_id`
     FOREIGN KEY (`lecturer`)
     REFERENCES `mydb`.`Users` (`id`)
@@ -87,6 +90,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`LectureResources` (
   `lecture_id` INT NOT NULL,
   PRIMARY KEY (`resource_id`, `lecture_id`),
   INDEX `lecture_id_idx` (`lecture_id` ASC) VISIBLE,
+  INDEX `resource_id_idx` (`resource_id` ASC) VISIBLE,
   CONSTRAINT `resource_id`
     FOREIGN KEY (`resource_id`)
     REFERENCES `mydb`.`Resources` (`id`)
@@ -108,6 +112,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`CourseLectures` (
   `lecture_id` INT NOT NULL,
   PRIMARY KEY (`course_id`, `lecture_id`),
   INDEX `lecture_id_idx` (`lecture_id` ASC) VISIBLE,
+  INDEX `course_id_idx` (`course_id` ASC) VISIBLE,
   CONSTRAINT `course_id`
     FOREIGN KEY (`course_id`)
     REFERENCES `mydb`.`Courses` (`id`)
@@ -140,9 +145,8 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Enrollments` (
   `student_id` INT NOT NULL,
   `course_id` INT NOT NULL,
   `payment_id` INT NOT NULL,
-  PRIMARY KEY (`student_id`, `course_id`, `payment_id`),
+  PRIMARY KEY (`student_id`, `course_id`),
   INDEX `enrollment_course_idx` (`course_id` ASC) VISIBLE,
-  INDEX `enrollment_payment_idx` (`payment_id` ASC) VISIBLE,
   CONSTRAINT `enrollment_course`
     FOREIGN KEY (`course_id`)
     REFERENCES `mydb`.`Courses` (`id`)
