@@ -15,21 +15,12 @@ CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
 USE `mydb` ;
 
 -- -----------------------------------------------------
--- Table `mydb`.`Users`
+-- Table `mydb`.`Lecturers`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`Users` (
+CREATE TABLE IF NOT EXISTS `mydb`.`Lecturers` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `firstName` VARCHAR(45) NOT NULL,
-  `lastName` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(45) NOT NULL,
-  `password_hash` VARCHAR(45) NOT NULL,
-  `description` VARCHAR(45) NULL,
-  `headline` VARCHAR(45) NULL,
-  `school` VARCHAR(45) NULL,
-  `education` VARCHAR(45) NULL,
-  `is_student` BIT(1) NOT NULL,
-  `dob` DATE NOT NULL,
-  PRIMARY KEY (`id`, `firstName`))
+  `resume` BLOB NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -39,22 +30,31 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `mydb`.`Courses` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NOT NULL,
-  `description` VARCHAR(500) NULL,
-  `level` INT(1) NOT NULL,
+  `description` VARCHAR(45) NULL,
+  `level` VARCHAR(45) NOT NULL,
   `price` DECIMAL NOT NULL,
-  `platform_sale` TINYINT(1) NULL,
+  `sale` TINYINT(1) NULL,
   `category` VARCHAR(45) NOT NULL,
   `lecturer` INT NULL,
   PRIMARY KEY (`id`),
   INDEX `title_index` (`title` ASC) VISIBLE,
-  INDEX `category_index` (`category` ASC),
   INDEX `lecturer_id_idx` (`lecturer` ASC) VISIBLE,
-  INDEX `course_price_title_idx` (`price` ASC, `title`),
   CONSTRAINT `lecturer_id`
     FOREIGN KEY (`lecturer`)
-    REFERENCES `mydb`.`Users` (`id`)
+    REFERENCES `mydb`.`Lecturers` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Students`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Students` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `school` VARCHAR(45) NULL,
+  `education` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Lectures` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` VARCHAR(45) NOT NULL,
   `description` VARCHAR(45) NULL,
-  `index` TINYINT(1) NOT NULL,
+  `price` DECIMAL NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -89,17 +89,30 @@ CREATE TABLE IF NOT EXISTS `mydb`.`LectureResources` (
   `lecture_id` INT NOT NULL,
   PRIMARY KEY (`resource_id`, `lecture_id`),
   INDEX `lecture_id_idx` (`lecture_id` ASC) VISIBLE,
-  INDEX `resource_id_idx` (`resource_id`),
   CONSTRAINT `resource_id`
     FOREIGN KEY (`resource_id`)
     REFERENCES `mydb`.`Resources` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `resource_lecture_id`
+  CONSTRAINT `lecture_id`
     FOREIGN KEY (`lecture_id`)
     REFERENCES `mydb`.`Lectures` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`Users` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `firstName` VARCHAR(45) NOT NULL,
+  `lastName` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `profile_image` BLOB NULL,
+  PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
 
@@ -111,13 +124,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`CourseLectures` (
   `lecture_id` INT NOT NULL,
   PRIMARY KEY (`course_id`, `lecture_id`),
   INDEX `lecture_id_idx` (`lecture_id` ASC) VISIBLE,
-  INDEX `course_id_idx` (`course_id` ASC) VISIBLE,
   CONSTRAINT `course_id`
     FOREIGN KEY (`course_id`)
     REFERENCES `mydb`.`Courses` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `course_lecture_id`
+  CONSTRAINT `lecture_id`
     FOREIGN KEY (`lecture_id`)
     REFERENCES `mydb`.`Lectures` (`id`)
     ON DELETE CASCADE
@@ -130,9 +142,11 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`Payments` (
   `id` INT NOT NULL,
-  `date` DATETIME NULL,
+  `date` DATE NULL,
   `is_refund` BIT(1) NULL,
   `total` DECIMAL NULL,
+  `settled` BIT(1) NULL,
+  `last_updated` TIMESTAMP NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -146,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Enrollments` (
   `payment_id` INT NOT NULL,
   PRIMARY KEY (`student_id`, `course_id`, `payment_id`),
   INDEX `enrollment_course_idx` (`course_id` ASC) VISIBLE,
-  INDEX `enrollment_student_idx` (`student_id` ASC),
+  INDEX `enrollment_payment_idx` (`payment_id` ASC) VISIBLE,
   CONSTRAINT `enrollment_course`
     FOREIGN KEY (`course_id`)
     REFERENCES `mydb`.`Courses` (`id`)
@@ -154,27 +168,12 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Enrollments` (
     ON UPDATE CASCADE,
   CONSTRAINT `enrollment_student`
     FOREIGN KEY (`student_id`)
-    REFERENCES `mydb`.`Users` (`id`)
+    REFERENCES `mydb`.`Students` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `enrollment_payment`
     FOREIGN KEY (`payment_id`)
     REFERENCES `mydb`.`Payments` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `mydb`.`CoursesOfTheDay`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `mydb`.`CoursesOfTheDay` (
-  `course_id` INT NOT NULL,
-  `date` DATE NOT NULL,
-  PRIMARY KEY (`course_id`, `date`),
-  CONSTRAINT `course_course_of_day`
-    FOREIGN KEY (`course_id`)
-    REFERENCES `mydb`.`Courses` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
