@@ -16,7 +16,7 @@ begin
     select id
     into userId
     from users
-    where is_student == true
+    where is_student = 1
     order by rand()
     limit 1;
 
@@ -57,20 +57,20 @@ begin
     select count(*)
     into userCount
     from users
-    where id = userId
+    where id = userId;
 
     -- check if user exists
-    if userCount == 0 then
+    if userCount = 0 then
         return 'User does not exist';
     end if;
 
     select u.is_student
     into is_student
     from users u
-    where id = userId
+    where id = userId;
 
     -- check if user is lecturer
-    if is_student == 1 then
+    if is_student = 1 then
         return 'User is not lecturer';
     end if;
 
@@ -117,7 +117,7 @@ sp: begin
         leave sp;
     end if;
 
-    select UserAge(s.dob) as age
+    select UserAge(u.dob) as age
     from users u
     where u.id = userId;
 end;
