@@ -1,21 +1,22 @@
 create
-    definer = root@localhost function CustomerAge(dateOfBirth date) returns int deterministic
+    definer = root@localhost function UserAge(dateOfBirth date) returns int deterministic
 begin
-    declare customerAge int;
-    set customerAge = timestampdiff(year, dateOfBirth, date(now()));
-    return (customerAge);
+    declare userAge int;
+    set userAge = timestampdiff(year, dateOfBirth, date(now()));
+    return (userAge);
 end;
 
 create
     definer = root@localhost procedure course_lottery()
 begin
-    declare studentId int;
+    declare userId int;
     declare courseId int;
     declare enrollmentCount int;
     -- select random student
     select id
-    into studentId
-    from students
+    into userId
+    from users
+    where is_student == true
     order by rand()
     limit 1;
 
@@ -30,7 +31,7 @@ begin
     select count(*)
     into enrollmentCount
     from enrollments
-    where student_id = studentId and course_id = courseId;
+    where student_id = userId and course_id = courseId;
 
     if
         enrollmentCount = 1 then
@@ -39,21 +40,44 @@ begin
 
     -- enroll student in the course
     insert into enrollments (student_id, course_id)
-    values (studentId, courseId);
+    values (userId, courseId);
 
     select * from enrollments
-    where student_id = studentId and course_id = courseId;
+    where student_id = userId and course_id = courseId;
 end;
 
 create
-    definer = root@localhost function getAverageCoursePricesByLecturer(lecturerId int) returns decimal(10, 2)
+    definer = root@localhost function getAverageCoursePricesByLecturer(userId int) returns decimal(10, 2)
     deterministic
 begin
     declare average decimal(10,2);
+    declare is_student smallint;
+    declare userCount int;
+
+    select count(*)
+    into userCount
+    from users
+    where id = userId
+
+    -- check if user exists
+    if userCount == 0 then
+        return 'User does not exist';
+    end if;
+
+    select u.is_student
+    into is_student
+    from users u
+    where id = userId
+
+    -- check if user is lecturer
+    if is_student == 1 then
+        return 'User is not lecturer';
+    end if;
+
     select avg(price)
     into average
     from courses
-    where lecturer = lecturerId;
+    where lecturer = userId;
     return average;
 end;
 
@@ -61,7 +85,7 @@ create
     definer = root@localhost procedure getAverageCoursePricesByLecturers()
 begin
     select *, getAverageCoursePricesByLecturer(id) as avg_course_price
-    from lecturers
+    from users
     order by avg_course_price desc;
 end;
 
@@ -77,23 +101,23 @@ begin
 end;
 
 create
-    definer = root@localhost procedure get_customer_age(IN studentId int)
+    definer = root@localhost procedure get_user_age(IN userId int)
 sp: begin
     -- check if student exists
-    declare studentCount int;
+    declare userCount int;
     select count(*)
-    into studentCount
-    from students
-    where id = studentId;
+    into userCount
+    from users
+    where id = userId;
 
     -- if student doesn't exists
     -- terminate stored procedure
-    if studentCount = 0 then
+    if userCount = 0 then
         select'Student does not exist';
         leave sp;
     end if;
 
-    select CustomerAge(s.dob) as age
-    from students s
-    where s.id = studentId;
+    select UserAge(s.dob) as age
+    from users u
+    where u.id = userId;
 end;
