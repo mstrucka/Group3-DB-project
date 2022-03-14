@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Enrollments` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `student_id` INT NOT NULL,
   `course_id` INT NOT NULL,
-  `payment_id` INT NOT NULL,
+  `payment_id` INT NULL,
   `finished` BIT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   INDEX `enrollment_course_idx` (`course_id` ASC) VISIBLE,

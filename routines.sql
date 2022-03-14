@@ -13,19 +13,12 @@ begin
     declare courseId int;
     declare enrollmentCount int;
     -- select random student
-    select id
-    into userId
-    from users
-    where is_student = 1
-    order by rand()
-    limit 1;
+    select getRandomUserId(true)
+    into userId;
 
     -- select random course
-    select id
-    into courseId
-    from courses
-    order by rand()
-    limit 1;
+    select getRandomCourseId()
+    into courseId;
 
     -- if student is already enrolled, leave
     select count(*)
@@ -33,8 +26,7 @@ begin
     from enrollments
     where student_id = userId and course_id = courseId;
 
-    if
-        enrollmentCount = 1 then
+    if enrollmentCount = 1 then
         call course_lottery();
     end if;
 
@@ -84,8 +76,9 @@ end;
 create
     definer = root@localhost procedure getAverageCoursePricesByLecturers()
 begin
-    select *, getAverageCoursePricesByLecturer(id) as avg_course_price
+    select id, firstName, lastName, getAverageCoursePricesByLecturer(id) as avg_course_price
     from users
+    where is_student = 0
     order by avg_course_price desc;
 end;
 
@@ -98,6 +91,33 @@ begin
     from courses;
 
     return (priceSum);
+end;
+
+create
+    definer = root@localhost function getRandomCourseId() returns int deterministic
+begin
+    declare courseId int;
+    select id
+    into courseId
+    from courses
+    order by rand()
+    limit 1;
+
+    return courseId;
+end;
+
+create
+    definer = root@localhost function getRandomUserId(isStudent tinyint(1)) returns int deterministic
+begin
+    declare userId int;
+    select id
+    into userId
+    from users
+    where is_student = isStudent
+    order by rand()
+    limit 1;
+
+    return userId;
 end;
 
 create
@@ -121,3 +141,4 @@ sp: begin
     from users u
     where u.id = userId;
 end;
+
