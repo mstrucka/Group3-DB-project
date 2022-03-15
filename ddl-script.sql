@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`Courses` (
   `category` VARCHAR(45) NOT NULL,
   `lecturer` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  INDEX `title_index` (`title` ASC) VISIBLE,
   INDEX `lecturer_id_idx` (`lecturer` ASC) VISIBLE,
   INDEX `course_title_price_idx` (`title` DESC, `price` DESC) VISIBLE,
   INDEX `course_category_idx` (`category` ASC) VISIBLE,
