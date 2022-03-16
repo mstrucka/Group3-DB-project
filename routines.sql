@@ -1,3 +1,4 @@
+use mydb;
 create
     definer = root@localhost function UserAge(dateOfBirth date) returns int deterministic
 begin

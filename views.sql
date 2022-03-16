@@ -1,3 +1,4 @@
+use mydb;
 CREATE VIEW most_challenging_courses AS
 SELECT *  
 FROM Courses

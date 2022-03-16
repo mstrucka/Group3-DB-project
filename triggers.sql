@@ -1,3 +1,4 @@
+use mydb;
 DELIMITER $$;
 
 CREATE TRIGGER after_course_of_the_day_insert
