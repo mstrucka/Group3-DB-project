@@ -1,6 +1,6 @@
 use mydb;
 create
-    definer = root@localhost function UserAge(dateOfBirth date) returns int deterministic
+    definer = root@localhost function calculateUserAge(dateOfBirth date) returns int deterministic
 begin
     declare userAge int;
     set userAge = timestampdiff(year, dateOfBirth, date(now()));
@@ -8,7 +8,7 @@ begin
 end;
 
 create
-    definer = root@localhost procedure course_lottery()
+    definer = root@localhost procedure courseLottery()
 begin
     declare userId int;
     declare courseId int;
@@ -21,14 +21,14 @@ begin
     select getRandomCourseId()
     into courseId;
 
-    -- if student is already enrolled, leave
+    -- if student is already enrolled, leave and call again
     select count(*)
     into enrollmentCount
     from enrollments
     where student_id = userId and course_id = courseId;
 
     if enrollmentCount = 1 then
-        call course_lottery();
+        call courseLottery();
     end if;
 
     -- enroll student in the course
@@ -122,7 +122,7 @@ begin
 end;
 
 create
-    definer = root@localhost procedure get_user_age(IN userId int)
+    definer = root@localhost procedure getUserAge(IN userId int)
 sp: begin
     -- check if student exists
     declare userCount int;
@@ -131,15 +131,14 @@ sp: begin
     from users
     where id = userId;
 
-    -- if student doesn't exists
+    -- if user doesn't exists
     -- terminate stored procedure
     if userCount = 0 then
-        select'Student does not exist';
+        select'User does not exist';
         leave sp;
     end if;
 
-    select UserAge(u.dob) as age
+    select calculateUserAge(u.dob) as age
     from users u
     where u.id = userId;
 end;
-
