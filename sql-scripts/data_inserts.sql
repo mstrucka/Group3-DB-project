@@ -42,3 +42,34 @@ values
 		(1,1,1),
         (2,2,2),
         (1,2,3);
+insert into lectures(title, description, `index`) values
+    ('Intro lecture', 'Do your best!', 0),
+    ('First lecture', 'This video is about math.', 1),
+    ('Second lecture', '10 + 2 = ?', 2),
+    ('Third lecture', 'This is it!', 3),
+    ('Intro into our English language lecture', 'How to talk ?', 0),
+    ('Writing 1', 'Try writing yourself!', 1);
+insert into resources(type, name, uri) values
+    ('video', 'intro_video', 'https://video.com'),
+    ('audio', 'math_lesson1', 'https://audio.com'),
+    ('pdf', 'exercise1', 'https://pdf.com'),
+    ('video', 'How to solve issues?', 'https://video.com'),
+    ('video', 'english_first_lesson', 'https://video.com'),
+    ('pdf', 'eng_exercise1', 'https://pdf.com');
+insert into lecture_resources(resource_id, lecture_id) values
+    (1, 1),
+    (2, 2),
+    (3, 3),
+    (4, 4),
+    (5, 5),
+    (6, 6);
+insert into course_lectures(course_id, lecture_id) values
+    (5, 1),
+    (5, 2),
+    (5, 3),
+    (5, 4),
+    (1, 5),
+    (1, 6);
+insert into course_progresses(enrollment_id, finished_lecture_id) values
+    (1, 1),
+    (1, 2);
