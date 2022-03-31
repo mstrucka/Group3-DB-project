@@ -1,3 +1,4 @@
 bottle==0.12.19
 sqlalchemy==1.4.32
+sqlalchemy-serializer==1.4.1
 mysqlclient==2.1.0
