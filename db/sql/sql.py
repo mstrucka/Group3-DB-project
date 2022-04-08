@@ -15,12 +15,12 @@ Base.metadata.drop_all(engine, checkfirst=True)
 # Add tables
 Base.metadata.create_all(engine)
 
-# populate db
-""" with engine.connect() as conn:
-    with open('sql-scripts\data_inserts.sql') as file:
-        query = text(file.read())
-        conn.execute(query) """
 
 Session = sessionmaker(engine)
 
+# populate db
+with Session.begin() as session:
+    with open('test-data.sql') as file:
+        query = text(file.read())
+        session.execute(query)
 
