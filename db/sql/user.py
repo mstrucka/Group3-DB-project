@@ -5,7 +5,7 @@ class User(Base, MyMixin, SerializerMixin):
     firstname = Column(String(45), nullable=False)
     lastname = Column(String(45), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    password = Column(String(45), nullable=False)
+    password_hash = Column(String(45), nullable=False)
     dob = Column(Date, nullable=False)
     school = Column(String(100))
     headline = Column(String(100))
@@ -14,4 +14,4 @@ class User(Base, MyMixin, SerializerMixin):
     description = Column(String(250))
 
     def __repr__(self) -> str:
-        return f'''<User(id={self.id}, firstName={self.firstName}, lastName={self.lastName}>'''
+        return f'''<User(id={self.id}, firstname={self.firstname}, lastname={self.lastname}>'''
