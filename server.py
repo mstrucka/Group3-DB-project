@@ -1,7 +1,11 @@
+from dotenv import load_dotenv
+load_dotenv()
 import os, json
 from bottle import route, run
 from db.sql.sql import Session
 from db.sql.user import User
+from db.sql.course import Course
+from sqlalchemy.orm import lazyload
 
 @route('/')
 def index():
@@ -9,6 +13,15 @@ def index():
     with Session() as session:
         u = session.query(User).filter(User.email.like('%reich%')).one()
     return { 'result': u.to_dict() }
+
+@route('/test')
+def get_course_and_lecturer():
+    with Session() as session:
+        res = session.query(Course).options(lazyload(Course.lecturer)).first()
+        course = res.to_dict()
+        
+    return { 'result': course }
+
 if os.environ.get('APP_LOCATION') == 'heroku':
     run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 else:
