@@ -1,8 +1,8 @@
 from . models import MyMixin, Base
+from . association_tables import course_lectures
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
-
 class Course(MyMixin, SerializerMixin, Base):
     title = Column(String(45), nullable=False)
     description = Column(String(500), nullable=False)
@@ -11,7 +11,9 @@ class Course(MyMixin, SerializerMixin, Base):
     platform_sale = Column(Boolean)
     category = Column(String(45))
     lecturer_id = Column(Integer, ForeignKey('user.id'))
+
     lecturer = relationship('User')
+    lectures = relationship('Lecture', secondary=course_lectures, cascade='all, delete')
 
     Index('course_title_price_idx', title.desc(), price.desc())
     Index('course_category_idx', category.asc())
