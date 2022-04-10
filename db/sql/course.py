@@ -20,4 +20,4 @@ class Course(MyMixin, SerializerMixin, Base):
     Index('lecturer_id_idx', lecturer_id.asc())
 
     def __repr__(self) -> str:
-        return f'''<Course(id={self.id}, title={self.title}>'''
+        return f'''<Course(id={self.id}, title={self.title})>'''
