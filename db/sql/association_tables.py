@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Column, Table, Index
+from sqlalchemy import ForeignKey, Column, Table
 from . models import Base
 
 course_lectures = Table('course_lectures', Base.metadata,

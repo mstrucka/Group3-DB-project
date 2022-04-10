@@ -1,6 +1,5 @@
 from . models import MyMixin, Base
-from . association_tables import lecture_resources
-from sqlalchemy import Column, String, Integer, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
 

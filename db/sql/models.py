@@ -1,5 +1,5 @@
 from sqlalchemy.orm import declarative_base, declarative_mixin, declared_attr
-from sqlalchemy import Column, Integer, String, Date, Boolean
+from sqlalchemy import Column, Integer
 
 @declarative_mixin
 class MyMixin:

@@ -1,6 +1,5 @@
 from . models import MyMixin, Base
-from sqlalchemy import Column, Integer, String, Date, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Date, Boolean
 from sqlalchemy_serializer import SerializerMixin
 class User(Base, MyMixin, SerializerMixin):
     firstname = Column(String(45), nullable=False)

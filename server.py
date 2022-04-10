@@ -3,12 +3,10 @@ from db.sql.enrollment import Enrollment
 
 from db.sql.lecture import Lecture
 
-import os, json
+import os
 from bottle import route, run, get
 from db.sql.sql import Session
 from db.sql.user import User
-from db.sql.course import Course
-from sqlalchemy.orm import lazyload
 from sqlalchemy import select
 
 import api.routes.course_router
@@ -24,20 +22,6 @@ def index():
         # this is with v1.x syntax
         #u = session.query(User).filter(User.email.like('%reich%')).one()
     return { 'result': user }
-
-@route('/test')
-def get_course_and_lecturer():
-    with Session() as session:
-        # v1.x syntax
-        """ res = session.query(Course).options(lazyload(Course.lecturer)).first()
-        course = res.to_dict() """
-
-        # v2.0 syntax
-        stmt = select(Course).join(User)
-        res = session.execute(stmt).scalars().first()
-        course = res.to_dict()
-
-    return { 'result': course }
 
 @get('/users')
 def get_users():
