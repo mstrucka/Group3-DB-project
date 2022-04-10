@@ -1,5 +1,8 @@
-from dotenv import load_dotenv
-load_dotenv()
+
+from db.sql.enrollment import Enrollment
+
+from db.sql.lecture import Lecture
+
 import os, json
 from bottle import route, run, get
 from db.sql.sql import Session
@@ -7,6 +10,8 @@ from db.sql.user import User
 from db.sql.course import Course
 from sqlalchemy.orm import lazyload
 from sqlalchemy import select
+
+import api.routes.course_router
 
 @route('/')
 def index():
@@ -44,15 +49,22 @@ def get_users():
         users = [ el.to_dict() for el in res ]
     return { 'users': users }
 
-@get('/courses')
-def get_courses():
-    # same as above, but using v1.x syntax
+@get('/lectures')
+def get_lectures():
     with Session() as session:
-        res = session.query(Course).options(lazyload(Course.lecturer)).all()
-        courses = [ el.to_dict() for el in res ]
-    return { 'courses': courses }
+        res = session.query(Lecture).all()
+        lectures = [ el.to_dict() for el in res ]
+    return { 'lectures': lectures }
 
-if os.environ.get('APP_LOCATION') == 'heroku':
-    run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-else:
-    run(host='localhost', port=8080, debug=True, reloader=True)
+@get('/enrollments')
+def get_enrollments():
+    with Session() as session:
+        res = session.query(Enrollment).all()
+        enrollments = [ el.to_dict() for el in res ]
+    return { 'enrollments': enrollments }
+
+def start_server():    
+    if os.environ.get('APP_LOCATION') == 'heroku':
+        run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    else:
+        run(host='localhost', port=8080, debug=True, reloader=True)
