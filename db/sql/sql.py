@@ -5,9 +5,8 @@ from db.sql.models import Base
 from . import user, course, lecture, payment, resource, enrollment
 
 # MySQL connection opened, global Session exposed
-engine = create_engine(
-    f'mysql+mysqldb://{os.getenv("SQL_USER")}:{os.getenv("SQL_PASS")}@{os.getenv("SQL_HOST")}:{os.getenv("SQL_PORT")}/{os.getenv("SQL_DB")}'
-    , echo=False, future=True)
+dbaddress = f'{os.getenv("SQL_USER")}:{os.getenv("SQL_PASS")}@{os.getenv("SQL_HOST")}:{os.getenv("SQL_PORT")}/{os.getenv("SQL_DB")}'
+engine = create_engine(f'mysql+mysqldb://{dbaddress}', future=True)
 
 # Drop tables
 Base.metadata.drop_all(engine, checkfirst=True)
