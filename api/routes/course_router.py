@@ -1,4 +1,3 @@
-from pprint import pprint
 from bottle import route, get, post, put, delete, request
 import api.controller.course_controller as course_ctrl
 
