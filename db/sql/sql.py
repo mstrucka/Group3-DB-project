@@ -6,7 +6,7 @@ from . import user, course, lecture, payment, resource, enrollment
 
 # MySQL connection opened, global Session exposed
 dbaddress = f'{os.getenv("SQL_USER")}:{os.getenv("SQL_PASS")}@{os.getenv("SQL_HOST")}:{os.getenv("SQL_PORT")}/{os.getenv("SQL_DB")}'
-engine = create_engine(f'mysql+mysqldb://{dbaddress}', future=True)
+engine = create_engine(f'mysql+mysqldb://{dbaddress}', future=True, echo=True)
 
 # Drop tables
 Base.metadata.drop_all(engine, checkfirst=True)

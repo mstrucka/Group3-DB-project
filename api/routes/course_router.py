@@ -1,4 +1,5 @@
-from bottle import route, get, post, put, delete
+from pprint import pprint
+from bottle import route, get, post, put, delete, request
 import api.controller.course_controller as course_ctrl
 
 @get('/courses')
@@ -15,8 +16,10 @@ def delete_course(id):
 
 @put('/courses/<id>')
 def edit_course(id):
-    pass
+    values = request.json
+    return course_ctrl.edit_course(id, values)
 
 @post('/courses')
 def create_course():
-    pass
+    values = request.json
+    return course_ctrl.create_course(values)

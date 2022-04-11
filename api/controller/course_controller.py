@@ -1,6 +1,6 @@
 from db.sql.sql import Session
 from db.sql.course import Course
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, update, insert
 
 def get_all_courses():
     with Session() as session:
@@ -21,3 +21,24 @@ def delete_by_id(id):
         session.delete(course)
         session.commit()
     return {}
+
+def edit_course(id, values):
+    with Session.begin() as session:
+        stmt = update(Course).where(Course.id == id).values(values)
+        session.execute(stmt)
+
+        stmt2 = select(Course).where(Course.id == id)
+        res = session.execute(stmt2).scalars().one()
+        updated_course = res.to_dict()
+
+        session.commit()
+    return dict(course=updated_course)
+
+def create_course(values):
+    stmt = insert(Course).values(values)
+    with Session.begin() as session:
+        res = session.execute(stmt)
+        row = session.get(Course, res.inserted_primary_key)
+        course = row.to_dict()
+        session.commit()
+    return dict(course=course)
