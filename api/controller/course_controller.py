@@ -18,9 +18,9 @@ def get_by_id(id):
 def delete_by_id(id):
     with Session.begin() as session:
         delstmt = delete(Course).where(Course.id == id)
-        session.execute(delstmt)
+        x = session.execute(delstmt)
         session.commit()
-    return {}
+    return { 'affected_rows': x.rowcount }
 
 def edit_course(id, values):
     with Session.begin() as session:
