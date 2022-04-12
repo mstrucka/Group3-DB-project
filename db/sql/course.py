@@ -13,6 +13,7 @@ class Course(MyMixin, SerializerMixin, Base):
     lecturer_id = Column(Integer, ForeignKey('user.id'))
 
     lecturer = relationship('User')
+    course_of_the_day = relationship('CourseOfTheDay')
     lectures = relationship('Lecture', secondary=course_lectures)
 
     Index('course_title_price_idx', title.desc(), price.desc())

@@ -76,3 +76,6 @@ values
 insert into course_progresses(enrollment_id, finished_lecture_id) values
     (1, 1),
     (1, 2);
+insert into courses_of_the_day(date, course_id) values
+    ('1998-01-01', 1),
+    ('1998-01-01', 2);
