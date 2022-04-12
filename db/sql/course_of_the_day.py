@@ -7,7 +7,7 @@ class CourseOfTheDay(Base):
     __mapper_args__= {'always_refresh': True}
 
     date = Column(Date, nullable=False, primary_key=True)
-    course_id = Column(Integer, ForeignKey('course.id', ondelete='CASCADE'), primary_key=True)
+    course_id = Column(Integer, ForeignKey('course.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True)
 
     def __repr__(self) -> str:
         return f'''<CourseOfTheDay (course_id={self.course_id}, date={self.date})>'''
