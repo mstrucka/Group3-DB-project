@@ -1,5 +1,6 @@
 from . models import MyMixin, Base
 from sqlalchemy import Column, String, Date, Boolean
+from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
 class User(Base, MyMixin, SerializerMixin):
     firstname = Column(String(45), nullable=False)
@@ -12,6 +13,9 @@ class User(Base, MyMixin, SerializerMixin):
     education = Column(String(100))
     is_student = Column(Boolean, nullable=False)
     description = Column(String(250))
+
+    lecturer = relationship('Course')
+    student = relationship('Enrollment')
 
     def __repr__(self) -> str:
         return f'''<User(id={self.id}, firstname={self.firstname}, lastname={self.lastname}>'''
