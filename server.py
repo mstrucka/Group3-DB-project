@@ -9,6 +9,10 @@ from sqlalchemy import select
 
 import api.routes.course_router
 import api.routes.lecture_router
+import api.routes.enrollment_router
+import api.routes.payment_router
+import api.routes.resource_router
+import api.routes.user_router
 
 @route('/')
 def index():
@@ -21,23 +25,6 @@ def index():
         # this is with v1.x syntax
         #u = session.query(User).filter(User.email.like('%reich%')).one()
     return { 'result': user }
-
-@get('/users')
-def get_users():
-    # idea for how to deal with multiple rows
-    # v2.0 syntax used
-    with Session() as session:
-        stmt = select(User)
-        res = session.execute(stmt).scalars().all()
-        users = [ el.to_dict() for el in res ]
-    return { 'users': users }
-
-@get('/enrollments')
-def get_enrollments():
-    with Session() as session:
-        res = session.query(Enrollment).all()
-        enrollments = [ el.to_dict() for el in res ]
-    return { 'enrollments': enrollments }
 
 def start_server():    
     if os.environ.get('APP_LOCATION') == 'heroku':
