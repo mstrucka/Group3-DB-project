@@ -9,8 +9,4 @@ class Enrollment(Base, MyMixin, SerializerMixin):
     payment_id = Column(Integer, ForeignKey('payment.id'), nullable=False, index=True)
     finished = Column(Boolean)
 
-    student = relationship('User')
-    course = relationship('Course', cascade='all, delete')
-    payment = relationship('Payment')
-
 
