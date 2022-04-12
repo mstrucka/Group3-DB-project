@@ -25,7 +25,7 @@ def local_db_setup():
             session.execute(query)
 
 def prod_db_setup():
-    db_url = os.environ.get('JAWSDB_URL')
+    db_url = os.environ.get('DATABASE_URL')
     engine = create_engine(db_url, future=True, echo=True)
 
     # Global session to use when querying
