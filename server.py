@@ -1,8 +1,6 @@
 
 from db.sql.enrollment import Enrollment
 
-from db.sql.lecture import Lecture
-
 import os
 from bottle import route, run, get
 from db.sql.sql import Session
@@ -10,6 +8,7 @@ from db.sql.user import User
 from sqlalchemy import select
 
 import api.routes.course_router
+import api.routes.lecture_router
 
 @route('/')
 def index():
@@ -32,13 +31,6 @@ def get_users():
         res = session.execute(stmt).scalars().all()
         users = [ el.to_dict() for el in res ]
     return { 'users': users }
-
-@get('/lectures')
-def get_lectures():
-    with Session() as session:
-        res = session.query(Lecture).all()
-        lectures = [ el.to_dict() for el in res ]
-    return { 'lectures': lectures }
 
 @get('/enrollments')
 def get_enrollments():
