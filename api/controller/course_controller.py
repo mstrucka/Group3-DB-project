@@ -17,8 +17,8 @@ def get_by_id(id):
 
 def delete_by_id(id):
     with Session.begin() as session:
-        course = session.query(Course).filter(Course.id == id).one()
-        session.delete(course)
+        delstmt = delete(Course).where(Course.id == id)
+        session.execute(delstmt)
         session.commit()
     return {}
 
