@@ -68,11 +68,11 @@ insert into lecture_resources(resource_id, lecture_id) values
     (5, 5),
     (6, 6);
 
-insert into enrollment(student_id, course_id, payment_id)
+insert into enrollment(student_id, course_id, payment_id, finished)
 values
-       (1,1,1),
-       (2,2,2),
-       (1,2,3);
+       (1,1,1,0),
+       (2,2,2,0),
+       (1,2,3,0);
 insert into course_progresses(enrollment_id, finished_lecture_id) values
     (1, 1),
     (1, 2);
