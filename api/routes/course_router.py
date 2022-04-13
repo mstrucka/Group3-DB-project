@@ -22,3 +22,9 @@ def edit_course(id):
 def create_course():
     values = request.json
     return course_ctrl.create_course(values)
+
+@get('/courses/search')
+def search_courses():
+    query = request.query.q
+    limit = request.query.limit or 10
+    return course_ctrl.search_courses(query, limit)

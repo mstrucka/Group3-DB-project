@@ -42,3 +42,9 @@ def create_course(values):
         course = row.to_dict()
         session.commit()
     return dict(course=course)
+
+def search_courses(query, limit):
+    with Session() as session:
+        results = session.query(Course).filter(Course.title.like(f'%{query}%') | Course.description.like(f'%{query}%')).limit(limit).all()
+        courses = [ el.to_dict() for el in results ]
+    return dict(courses=courses)
