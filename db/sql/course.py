@@ -12,9 +12,8 @@ class Course(MyMixin, SerializerMixin, Base):
     category = Column(String(45))
     lecturer_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE', onupdate='CASCADE'))
 
-    course_of_the_day = relationship('CourseOfTheDay')
     lectures = relationship('Lecture', secondary=course_lectures)
-    course = relationship('Enrollment', cascade='all, delete')
+    lecturer = relationship('User')
 
     Index('course_title_price_idx', title.desc(), price.desc())
     Index('course_category_idx', category.asc())
