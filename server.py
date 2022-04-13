@@ -12,15 +12,7 @@ import api.routes.lecture_router
 
 @route('/')
 def index():
-    with Session() as session:
-        # below is how to query using v2.0 syntax
-        statement = select(User).filter_by(firstname='Darth')
-        result = session.execute(statement).scalars().first()
-        user = result.to_dict()
-
-        # this is with v1.x syntax
-        #u = session.query(User).filter(User.email.like('%reich%')).one()
-    return { 'result': user }
+    return '<h1>DB for devs mandatory 02</h1><h2>Endpoints: GET /users, GET /enrollments, GET /courses, GET /lectures</h2>'
 
 @get('/users')
 def get_users():
