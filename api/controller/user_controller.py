@@ -39,6 +39,6 @@ def create_user(values):
     with Session.begin() as session:
         res = session.execute(stmt)
         row = session.get(User, res.inserted_primary_key)
-        user = row.to_dict()
+        user = row.to_dict(rules=('-password_hash',))
         session.commit()
-    return dict(user=user)
+    return user
