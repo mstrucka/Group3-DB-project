@@ -5,7 +5,7 @@ class User(Base, MyMixin, SerializerMixin):
     firstname = Column(String(45), nullable=False)
     lastname = Column(String(45), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    password_hash = Column(String(45), nullable=False)
+    password_hash = Column(String(100), nullable=False)
     dob = Column(Date, nullable=False)
     school = Column(String(100))
     headline = Column(String(100))
