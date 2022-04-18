@@ -42,3 +42,9 @@ def create_enrollment(values):
         enrollment = row.to_dict()
         session.commit()
     return dict(enrollment=enrollment)
+
+def get_by_user(user_id):
+    with Session() as session:
+        res = session.query(Enrollment).filter(Enrollment.student_id == user_id).all()
+        enrollments = [ el.to_dict() for el in res ]
+    return dict(enrollments=enrollments)
