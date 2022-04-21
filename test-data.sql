@@ -46,11 +46,11 @@ insert into resource (type, name, uri) values
     ('video', 'english_first_lesson', 'https://video.com'),
     ('pdf', 'eng_exercise1', 'https://pdf.com');
 
-insert into payment(id, date, is_refund, total)
+insert into payment(date, is_refund, total)
 values 
-	(1,'1998-01-01', 0, 100.00),
-	(2,'1998-01-02', 0, 150.00),
-    (3,'1998-01-03', 1, 200.00);
+	('1998-01-01', 0, 100.00),
+	('1998-01-02', 0, 150.00),
+    ('1998-01-03', 1, 200.00);
 
 insert into course_lectures(course_id, lecture_id) values
     (5, 1),
@@ -76,6 +76,6 @@ values
 insert into course_progresses(enrollment_id, finished_lecture_id) values
     (1, 1),
     (1, 2);
-insert into courses_of_the_day(date, course_id) values
+insert into course_of_the_day(date, course_id) values
     ('1998-01-01', 1),
     ('1998-01-01', 2);
