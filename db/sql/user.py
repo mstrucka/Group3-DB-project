@@ -2,6 +2,8 @@ from . models import MyMixin, Base
 from sqlalchemy import Column, String, Date, Boolean
 from sqlalchemy_serializer import SerializerMixin
 class User(Base, MyMixin, SerializerMixin):
+    serialize_rules = ('-password_hash',)
+
     firstname = Column(String(45), nullable=False)
     lastname = Column(String(45), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
