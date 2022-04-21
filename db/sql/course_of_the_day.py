@@ -1,9 +1,10 @@
-from . models import Base
+from sqlalchemy_serializer import SerializerMixin
+from . models import Base, MyMixin
 from sqlalchemy import Column, Date, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-class CourseOfTheDay(Base):
-    __tablename__ = 'courses_of_the_day'
+class CourseOfTheDay(Base, SerializerMixin):
+    __tablename__ = 'course_of_the_day'
     __table_args__ = {'mysql_engine': 'InnoDB'}
     __mapper_args__= {'always_refresh': True}
 

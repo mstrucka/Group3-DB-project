@@ -12,7 +12,7 @@ def local_db_setup():
     Base.metadata.drop_all(engine, checkfirst=True)
 
     # Add tables
-    Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine, checkfirst=True)
 
     # Global session to use when querying
     global Session
@@ -31,7 +31,6 @@ def prod_db_setup():
     # Global session to use when querying
     global Session
     Session = sessionmaker(engine)
-
 
 if os.environ.get('APP_LOCATION') == 'heroku':
     prod_db_setup()
