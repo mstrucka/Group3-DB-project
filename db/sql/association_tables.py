@@ -1,5 +1,5 @@
 from sqlalchemy import ForeignKey, Column, Table
-from . models import Base
+from .models import Base
 
 course_lectures = Table('course_lectures', Base.metadata,
     Column('course_id', ForeignKey('course.id', ondelete='CASCADE', onupdate='CASCADE'), primary_key=True, index=True),
