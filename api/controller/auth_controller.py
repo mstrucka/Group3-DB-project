@@ -6,7 +6,7 @@ import api.controller.user_controller as user_ctrl
 from db.sql.user import User
 from db.sql.sql import Session
 from sqlalchemy import select
-from bottle import route, get, post, put, auth_basic, request, abort, BottleException
+from bottle import request, response, abort, BottleException
 from passlib.hash import bcrypt
 
 jwt_secret = os.environ.get('jwt_secret')
@@ -71,7 +71,7 @@ def authenticate():
         abort(403, f'''Authentication failed for {credentials['user']}: {error_message}''')
  
     token = jwt.encode(build_profile(credentials), jwt_secret, algorithm=jwt_algorithm)
- 
+
     logging.info(f'''Authentication successful for user_id={credentials['user']['id']}''')
     return { 'token': token }
 
@@ -87,10 +87,9 @@ def authenticate_user(credentials):
         stmt = select(User).where(User.email == user)
         res = session.execute(stmt).scalars().one()
         pass_verified = bcrypt.verify(password, res.password_hash)
-        user = res.to_dict(rules=('-password_hash',))
+        if pass_verified: return res.to_dict()
 
-    if pass_verified: return user
-    else: raise Exception('Wrong password')
+    raise Exception('Wrong password')
 
 def register(values):
     if (len(values.keys()) < 6):

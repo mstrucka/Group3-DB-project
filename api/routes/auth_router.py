@@ -1,8 +1,7 @@
 import api.controller.auth_controller as auth_ctrl
-import api.controller.user_controller as user_ctrl
 import logging
 from api.controller.auth_controller import requires_auth, get_jwt_credentials
-from bottle import route, get, post, put, delete, request, abort, redirect
+from bottle import get, post, request, abort
 
 @post('/login')
 def login_authenticate():
@@ -18,11 +17,10 @@ def register():
 def get_protected_resource():
     # get user details from JWT
     authenticated_user = get_jwt_credentials()
- 
+    
     # get protected resource
     try:
-        return { 'message': 'success!' }
-        #return {'resource': somedao.find_protected_resource_by_username(authenticated_user['username'])}
+        return { 'message': 'success!', 'user': authenticated_user }
     except Exception as e:
-        logging.exception("Resource not found")
-        abort(404, 'No resource for username %s was found.' % authenticated_user['username'])
+        logging.exception("Resource not found", e)
+        abort(404, 'No resource for username %s was found.' % authenticated_user['user'])

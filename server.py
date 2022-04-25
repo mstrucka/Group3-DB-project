@@ -1,13 +1,7 @@
-import os
-from bottle import route, run
-
-import api.routes.course_router
-import api.routes.lecture_router
-import api.routes.enrollment_router
-import api.routes.payment_router
-import api.routes.resource_router
-import api.routes.user_router
-import api.routes.auth_router
+import os, logging
+import bottle
+from bottle import route, get, run
+import api.routes
 
 @route('/')
 def index():
