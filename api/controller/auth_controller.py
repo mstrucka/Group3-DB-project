@@ -101,3 +101,7 @@ def register(values):
     del values['password']
     new_user = user_ctrl.create_user(values)
     return { 'message': 'you have been registered', 'user': new_user }
+
+def get_user_id_from_jwt():
+    authenticated_user = get_jwt_credentials()
+    return authenticated_user['user']['id']
