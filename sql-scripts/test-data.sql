@@ -78,4 +78,4 @@ insert into course_progresses(enrollment_id, finished_lecture_id) values
     (1, 2);
 insert into course_of_the_day(date, course_id) values
     ('1998-01-01', 1),
-    ('1998-01-01', 2);
+    ('2000-01-01', 2);
