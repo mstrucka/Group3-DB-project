@@ -15,15 +15,21 @@ def local_db_setup():
     Base.metadata.create_all(engine, checkfirst=True)
 
     # Global session to use when querying
-    global Session
-    Session = sessionmaker(engine)
+    rootSession = sessionmaker(engine)
 
     # populate db
-    with Session.begin() as session:
-        with open('test-data.sql') as file:
+    with rootSession.begin() as session:
+        with open('./sql-scripts/test-data.sql') as file, open('./sql-scripts/user-privileges.sql') as file2:
             query = text(file.read())
+            session.execute(query),
+            query = text(file2.read())
             session.execute(query)
 
+    engine.dispose()
+    db_url = f'mysql+mysqldb://{os.getenv("SQL_APIUSER")}:{os.getenv("SQL_APIPASS")}@{os.getenv("SQL_HOST")}:{os.getenv("SQL_PORT")}/{os.getenv("SQL_DB")}'
+    engine = create_engine(db_url, future=True, echo=True)
+    global Session
+    Session = sessionmaker(engine)
 def prod_db_setup():
     db_url = os.environ.get('DATABASE_URL')
     engine = create_engine(db_url, future=True, echo=True)
