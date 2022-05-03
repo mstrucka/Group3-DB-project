@@ -1,6 +1,9 @@
 from db.sql.sql import Session
 from db.sql.payment import Payment
-from sqlalchemy import select, delete, update, insert
+from db.sql.enrollment import Enrollment
+from sqlalchemy import false, select, delete, update, insert
+import api.controller.course_controller as course_ctrl
+
 
 def get_all_payments():
     with Session() as session:
@@ -34,11 +37,26 @@ def edit_payment(id, values):
         session.commit()
     return dict(payment=updated_payment)
 
-def create_payment(values):
-    stmt = insert(Payment).values(values)
+def create_payment(user_id, values):
+    course_ids = values['course_ids']
+    total_price = 0.0
     with Session.begin() as session:
+        for course_id in course_ids:
+            # TODO: change to a query getting just the course price
+            course = course_ctrl.get_by_id(course_id)
+            total_price += float(course['course']['price'])
+
+        values['total'] = total_price
+        del values['course_ids']
+
+        stmt = insert(Payment).values(values)
         res = session.execute(stmt)
         row = session.get(Payment, res.inserted_primary_key)
         payment = row.to_dict()
+
+        courses = []
+        for course_id in course_ids:
+            courses.append(Enrollment(student_id=user_id, course_id=course_id, payment_id=payment['id']))
+        session.bulk_save_objects(courses)
         session.commit()
     return dict(payment=payment)

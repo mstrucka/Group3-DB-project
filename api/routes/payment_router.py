@@ -1,4 +1,5 @@
 from bottle import route, get, post, put, delete, request
+from api.controller.auth_controller import get_user_id_from_jwt, requires_auth
 import api.controller.payment_controller as payment_ctrl
 
 @get('/payments')
@@ -19,6 +20,8 @@ def edit_payment(id):
     return payment_ctrl.edit_payment(id, values)
 
 @post('/payments')
+@requires_auth
 def create_payment():
+    user_id = get_user_id_from_jwt()
     values = request.json
-    return payment_ctrl.create_payment(values)
+    return payment_ctrl.create_payment(user_id, values)
