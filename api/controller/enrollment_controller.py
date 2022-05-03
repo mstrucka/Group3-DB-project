@@ -34,15 +34,6 @@ def edit_enrollment(id, values):
         session.commit()
     return dict(enrollment=updated_enrollment)
 
-def create_enrollment(values):
-    stmt = insert(Enrollment).values(values)
-    with Session.begin() as session:
-        res = session.execute(stmt)
-        row = session.get(Enrollment, res.inserted_primary_key)
-        enrollment = row.to_dict()
-        session.commit()
-    return dict(enrollment=enrollment)
-
 def get_by_user(user_id):
     with Session() as session:
         res = session.query(Enrollment).filter(Enrollment.student_id == user_id).all()
