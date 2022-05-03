@@ -5,6 +5,10 @@ import api.controller.course_controller as course_ctrl
 def get_all_courses():
     return course_ctrl.get_all_courses()
 
+@get('/courses/today')
+def get_all_courses():
+    return course_ctrl.get_todays_course_of_the_day()
+
 @get('/courses/<id>')
 def get_course_by_id(id):
     return course_ctrl.get_by_id(id)

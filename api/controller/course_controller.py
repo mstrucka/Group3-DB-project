@@ -1,13 +1,20 @@
 from db.sql.sql import Session
 from db.sql.course import Course
+from db.sql.course_of_the_day import CourseOfTheDay
 from db.sql.association_tables import course_lectures
-from sqlalchemy import select, delete, update, insert
+from sqlalchemy import desc, select, delete, update, insert
 
 def get_all_courses():
     with Session() as session:
         res = session.query(Course).all()
         courses = [ el.to_dict() for el in res ]
     return dict(courses=courses)
+
+def get_todays_course_of_the_day():
+    with Session() as session:
+        res = session.query(CourseOfTheDay).order_by(desc(CourseOfTheDay.date)).first()
+        course = res.to_dict()
+    return course
 
 def get_by_id(id):
     with Session() as session:
