@@ -1,4 +1,52 @@
 use mydb;
+/* TRIGGERS */
+CREATE TRIGGER after_course_of_the_day_insert
+AFTER INSERT
+ON course_of_the_day FOR EACH ROW
+begin
+	update course
+	set platform_sale = platform_sale + 10
+	where course.id=NEW.course_id;
+end;
+
+/* VIEWS */
+use mydb;
+CREATE VIEW most_challenging_courses AS
+SELECT *
+FROM Course
+ORDER BY Course.level DESC LIMIT 3;
+
+CREATE VIEW students_with_most_enrollments AS
+select User.firstName, User.lastName, count(student_id) as courses from Enrollment
+left join User ON Enrollment.student_id = User.id
+group by User.firstName, User.lastName
+order by courses desc;
+
+/* EVENTS */
+/* for testing purposes */
+/* ON SCHEDULE AT CURRENT_TIMESTAMP + INTERVAL 1 MINUTE */
+CREATE EVENT IF NOT EXISTS removePlatformSaleEvent
+ON SCHEDULE EVERY 1 DAY STARTS (CURRENT_DATE + INTERVAL 1 DAY + INTERVAL 1 HOUR)
+DO begin
+    declare courseId int;
+    select course_id into courseId from course_of_the_day order by date DESC limit 1;
+	update course
+	join course_of_the_day on course_of_the_day.course_id=course.id
+	set platform_sale = 0
+	where course.id=courseId;
+end;
+
+CREATE EVENT IF NOT EXISTS selectRandomCourse
+ON SCHEDULE EVERY 1 DAY STARTS (CURRENT_DATE + INTERVAL 1 DAY + INTERVAL 1 HOUR)
+DO begin
+	declare courseId int;
+    select id into courseId from course order by rand() limit 1;
+
+	insert into course_of_the_day (course_id, date)
+	values(courseId, CURRENT_DATE);
+end;
+
+/* ROUTINES */
 create
     definer = root@localhost function calculateUserAge(dateOfBirth date) returns int deterministic
 begin
@@ -24,7 +72,7 @@ begin
     -- if student is already enrolled, leave and call again
     select count(*)
     into enrollmentCount
-    from enrollments
+    from enrollment
     where student_id = userId and course_id = courseId;
 
     if enrollmentCount = 1 then
@@ -32,10 +80,10 @@ begin
     end if;
 
     -- enroll student in the course
-    insert into enrollments (student_id, course_id)
+    insert into enrollment (student_id, course_id)
     values (userId, courseId);
 
-    select * from enrollments
+    select * from enrollment
     where student_id = userId and course_id = courseId;
 end;
 
@@ -49,7 +97,7 @@ begin
 
     select count(*)
     into userCount
-    from users
+    from user
     where id = userId;
 
     -- check if user exists
@@ -59,7 +107,7 @@ begin
 
     select u.is_student
     into is_student
-    from users u
+    from user u
     where id = userId;
 
     -- check if user is lecturer
@@ -69,7 +117,7 @@ begin
 
     select avg(price)
     into average
-    from courses
+    from course
     where lecturer = userId;
     return average;
 end;
@@ -78,7 +126,7 @@ create
     definer = root@localhost procedure getAverageCoursePricesByLecturers()
 begin
     select id, firstName, lastName, getAverageCoursePricesByLecturer(id) as avg_course_price
-    from users
+    from user
     where is_student = 0
     order by avg_course_price desc;
 end;
@@ -89,7 +137,7 @@ begin
     declare priceSum decimal(10,2);
     select sum(price)
     into priceSum
-    from courses;
+    from course;
 
     return (priceSum);
 end;
@@ -100,7 +148,7 @@ begin
     declare courseId int;
     select id
     into courseId
-    from courses
+    from course
     order by rand()
     limit 1;
 
@@ -113,7 +161,7 @@ begin
     declare userId int;
     select id
     into userId
-    from users
+    from user
     where is_student = isStudent
     order by rand()
     limit 1;
@@ -128,7 +176,7 @@ sp: begin
     declare userCount int;
     select count(*)
     into userCount
-    from users
+    from user
     where id = userId;
 
     -- if user doesn't exists
@@ -139,6 +187,9 @@ sp: begin
     end if;
 
     select calculateUserAge(u.dob) as age
-    from users u
+    from user u
     where u.id = userId;
-end; 
+end;
+/* PRIVILEGES */
+CREATE USER IF NOT EXISTS apiUser1 IDENTIFIED BY 'api123';
+GRANT SELECT, UPDATE, DELETE, INSERT, EXECUTE ON *.* TO 'apiUser1' WITH GRANT OPTION;

@@ -1,8 +1,8 @@
 use mydb;
 CREATE VIEW most_challenging_courses AS
-SELECT *  
+SELECT *
 FROM Courses
-ORDER BY Courses.level DESC LIMIT 3;  
+ORDER BY Courses.level DESC LIMIT 3;
 
 CREATE VIEW students_with_most_enrollments AS
 select Users.firstName, Users.lastName, count(student_id) as courses from Enrollments
