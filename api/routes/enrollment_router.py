@@ -17,8 +17,3 @@ def delete_enrollment(id):
 def edit_enrollment(id):
     values = request.json
     return enrollment_ctrl.edit_enrollment(id, values)
-
-@post('/enrollments')
-def create_enrollment():
-    values = request.json
-    return enrollment_ctrl.create_enrollment(values)

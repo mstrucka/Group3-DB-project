@@ -3,7 +3,7 @@ from sqlalchemy import Column, String
 from sqlalchemy_serializer import SerializerMixin
 
 class Resource(Base, MyMixin, SerializerMixin):
-    # can be replaced by Enum
+    # TODO: replace by Enum
     type = Column(String(45), nullable=False)
     name = Column(String(100), nullable=False)
     uri = Column(String(100), nullable=False)

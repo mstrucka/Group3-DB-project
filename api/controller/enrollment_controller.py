@@ -15,6 +15,14 @@ def get_by_id(id):
         enrollment = res.to_dict()
     return dict(enrollment=enrollment)
 
+def get_by_user_id_and_course_id(course_id, user_id):
+    with Session() as session:
+        stmt = select(Enrollment).where(Enrollment.course_id == course_id and Enrollment.student_id == user_id)
+        res = session.execute(stmt).scalars().one()
+        enrollment = res.to_dict()
+    return enrollment
+
+
 def delete_by_id(id):
     with Session.begin() as session:
         delstmt = delete(Enrollment).where(Enrollment.id == id)
@@ -33,15 +41,6 @@ def edit_enrollment(id, values):
 
         session.commit()
     return dict(enrollment=updated_enrollment)
-
-def create_enrollment(values):
-    stmt = insert(Enrollment).values(values)
-    with Session.begin() as session:
-        res = session.execute(stmt)
-        row = session.get(Enrollment, res.inserted_primary_key)
-        enrollment = row.to_dict()
-        session.commit()
-    return dict(enrollment=enrollment)
 
 def get_by_user(user_id):
     with Session() as session:

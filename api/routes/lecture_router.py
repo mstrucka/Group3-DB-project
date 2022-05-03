@@ -1,4 +1,5 @@
 from bottle import route, get, post, put, delete, request
+from api.controller.auth_controller import get_user_id_from_jwt, requires_auth
 import api.controller.lecture_controller as lecture_ctrl
 
 @get('/lectures')
@@ -17,6 +18,12 @@ def delete_lecture(id):
 def edit_lecture(id):
     values = request.json
     return lecture_ctrl.edit_lecture(id, values)
+
+@put('/courses/lectures/<id>')
+@requires_auth
+def finish_lecture(id):
+    user_id = get_user_id_from_jwt()
+    return lecture_ctrl.finish_lecture(user_id, id)
 
 @post('/lectures')
 def create_lecture():
