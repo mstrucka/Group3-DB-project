@@ -6,7 +6,7 @@ from sqlalchemy_serializer import SerializerMixin
 
 class Lecture(Base, MyMixin, SerializerMixin):
     title = Column(String(80), nullable=False)
-    description = Column(String(250))
+    description = Column(String(250), nullable=False)
     # could also be mysql.TINYINT
     index = Column(SmallInteger, nullable=False)
 

@@ -1,5 +1,6 @@
 from db.sql.sql import Session
 from db.sql.lecture import Lecture
+from db.sql.association_tables import course_lectures
 from sqlalchemy import select, delete, update, insert
 
 def get_all_lectures():
@@ -35,10 +36,19 @@ def edit_lecture(id, values):
     return dict(lecture=updated_lecture)
 
 def create_lecture(values):
+    # assign values for course_lectures assoc. table
+    course_lectures_values = {}
+    course_lectures_values['course_id'] = values['course_id']
+    # remove course_id from values inserted into lecture
+    del values['course_id']
+
     stmt = insert(Lecture).values(values)
     with Session.begin() as session:
         res = session.execute(stmt)
         row = session.get(Lecture, res.inserted_primary_key)
         lecture = row.to_dict()
+
+        course_lectures_values['lecture_id']=lecture['id']
+        session.execute(course_lectures.insert(), course_lectures_values)
         session.commit()
     return dict(lecture=lecture)
