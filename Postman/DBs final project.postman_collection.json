@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "2f3d8f17-eb5b-4a69-b9ae-90250d948a43",
+		"name": "DBs final project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:8080/register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"user\",\r\n    \"lastname\": \"ofdatabase\",\r\n    \"email\": \"user@dbs.com\",\r\n    \"password\": \"1234!Asd\",\r\n    \"is_student\": 1,\r\n    \"dob\": \"1999-11-11\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/register",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8080/login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": \"sam@dbs.com\",\r\n    \"password\": \"1234!Asd\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "pay",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"course_ids\": [3, 4]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/payments",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"payments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "create lecture",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"course_id\": 1,\r\n    \"title\": \"first lecture\",\r\n    \"description\": \"description\",\r\n    \"index\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/lectures",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"lectures"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create resources",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"lecture_id\": 5,\r\n    \"type\": \"video\",\r\n    \"name\": \"random yt video\",\r\n    \"uri\": \"https://www.youtube.com/watch?v=KQTq07gihqg\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/resources",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"resources"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "finish lecutre",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "file",
+					"file": {}
+				},
+				"url": {
+					"raw": "localhost:8080/courses/lectures/5",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"courses",
+						"lectures",
+						"5"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImlkIjo5LCJoZWFkbGluZSI6bnVsbCwiZGVzY3JpcHRpb24iOm51bGwsImVkdWNhdGlvbiI6bnVsbCwibGFzdG5hbWUiOiJvZmRhdGFiYXNlIiwiZW1haWwiOiJ1c2VyQGRicy5jb20iLCJpc19zdHVkZW50Ijp0cnVlLCJmaXJzdG5hbWUiOiJ1c2VyIiwiZG9iIjoiMTk5OS0xMS0xMSIsInNjaG9vbCI6bnVsbH0sImV4cCI6MTY1MTYwMDI1MC43MDI1NzY2fQ.NCnOPSzJ31KG0Ux-U_op0bU8CXdz2m1n2gwt0H7KoM4",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

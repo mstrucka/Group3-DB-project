@@ -1,35 +1,11 @@
-
-from db.sql.enrollment import Enrollment
-
-import os
-from bottle import route, run, get
-from db.sql.sql import Session
-from db.sql.user import User
-from sqlalchemy import select
-
-import api.routes.course_router
-import api.routes.lecture_router
+import os, logging
+import bottle
+from bottle import route, get, run
+import api.routes
 
 @route('/')
 def index():
-    return '<h1>DB for devs mandatory 02</h1><h2>Endpoints: GET /users, GET /enrollments, GET /courses, GET /lectures</h2>'
-
-@get('/users')
-def get_users():
-    # idea for how to deal with multiple rows
-    # v2.0 syntax used
-    with Session() as session:
-        stmt = select(User)
-        res = session.execute(stmt).scalars().all()
-        users = [ el.to_dict() for el in res ]
-    return { 'users': users }
-
-@get('/enrollments')
-def get_enrollments():
-    with Session() as session:
-        res = session.query(Enrollment).all()
-        enrollments = [ el.to_dict() for el in res ]
-    return { 'enrollments': enrollments }
+    return { 'message': 'Welcome to dbfordevs mandatory assignment' }
 
 def start_server():    
     if os.environ.get('APP_LOCATION') == 'heroku':

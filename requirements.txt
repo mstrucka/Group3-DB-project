@@ -1,6 +1,12 @@
+bcrypt==3.2.0
 bottle==0.12.19
-sqlalchemy==1.4.32
-sqlalchemy-serializer==1.4.1
-mysqlclient==2.1.0
+cffi==1.15.0
 greenlet==1.1.2
+mysqlclient==2.1.0
+passlib==1.7.4
+pycparser==2.21
+PyJWT==2.3.0
 python-dotenv==0.20.0
+six==1.16.0
+SQLAlchemy==1.4.32
+SQLAlchemy-serializer==1.4.1

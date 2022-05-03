@@ -1,5 +1,6 @@
 from db.sql.sql import Session
 from db.sql.course import Course
+from db.sql.association_tables import course_lectures
 from sqlalchemy import select, delete, update, insert
 
 def get_all_courses():
@@ -14,6 +15,13 @@ def get_by_id(id):
         res = session.execute(stmt).scalars().one()
         course = res.to_dict()
     return dict(course=course)
+
+def get_by_lecture_id(lecture_id):
+    with Session() as session:
+        res = session.execute(course_lectures.select().where(course_lectures.c.lecture_id == lecture_id))
+        parsed_res = res.mappings().first()
+    # TODO: works only if lecture_id isn't present more than once
+    return parsed_res['course_id']
 
 def delete_by_id(id):
     with Session.begin() as session:
@@ -42,3 +50,9 @@ def create_course(values):
         course = row.to_dict()
         session.commit()
     return dict(course=course)
+
+def search_courses(query, limit):
+    with Session() as session:
+        results = session.query(Course).filter(Course.title.ilike(f'%{query}%') | Course.description.ilike(f'%{query}%')).limit(limit).all()
+        courses = [ el.to_dict() for el in results ]
+    return dict(courses=courses)

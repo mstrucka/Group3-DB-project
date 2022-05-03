@@ -4,13 +4,12 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
 
 class Enrollment(Base, MyMixin, SerializerMixin):
-    student_id = Column(Integer, ForeignKey('user.id'), nullable=False)
-    course_id = Column(Integer, ForeignKey('course.id', ondelete='CASCADE'), nullable=False, index=True)
-    payment_id = Column(Integer, ForeignKey('payment.id'), nullable=False, index=True)
-    finished = Column(Boolean)
+    student_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False)
+    course_id = Column(Integer, ForeignKey('course.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
+    payment_id = Column(Integer, ForeignKey('payment.id', ondelete='CASCADE', onupdate='CASCADE'), nullable=False, index=True)
+    finished = Column(Boolean, nullable=False, default=False)
 
-    student = relationship('User')
     course = relationship('Course', cascade='all, delete')
     payment = relationship('Payment')
-
+    student = relationship('User')
 
