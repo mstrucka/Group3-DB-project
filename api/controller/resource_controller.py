@@ -1,6 +1,7 @@
 from db.sql.sql import Session
 from db.sql.resource import Resource
 from sqlalchemy import select, delete, update, insert
+from db.sql.association_tables import lecture_resources
 
 def get_all_resources():
     with Session() as session:
@@ -35,10 +36,19 @@ def edit_resource(id, values):
     return dict(resource=updated_resource)
 
 def create_resource(values):
+    # assign values for course_lectures assoc. table
+    lectures_resources_values = {}
+    lectures_resources_values['lecture_id'] = values['lecture_id']
+    # remove course_id from values inserted into lecture
+    del values['lecture_id']
+
     stmt = insert(Resource).values(values)
     with Session.begin() as session:
         res = session.execute(stmt)
         row = session.get(Resource, res.inserted_primary_key)
         resource = row.to_dict()
+
+        lectures_resources_values['resource_id']=resource['id']
+        session.execute(lecture_resources.insert(), lectures_resources_values)
         session.commit()
     return dict(resource=resource)
