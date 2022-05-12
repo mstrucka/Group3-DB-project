@@ -11,12 +11,12 @@ end;
 
 /* VIEWS */
 use mydb;
-CREATE VIEW most_challenging_courses AS
+CREATE OR REPLACE VIEW most_challenging_courses AS
 SELECT *
 FROM Course
 ORDER BY Course.level DESC LIMIT 3;
 
-CREATE VIEW students_with_most_enrollments AS
+CREATE OR REPLACE VIEW students_with_most_enrollments AS
 select User.firstName, User.lastName, count(student_id) as courses from Enrollment
 left join User ON Enrollment.student_id = User.id
 group by User.firstName, User.lastName
@@ -47,6 +47,7 @@ DO begin
 end;
 
 /* ROUTINES */
+DROP FUNCTION IF EXISTS calculateUserAge;
 create
     definer = root@localhost function calculateUserAge(dateOfBirth date) returns int deterministic
 begin
@@ -54,6 +55,8 @@ begin
     set userAge = timestampdiff(year, dateOfBirth, date(now()));
     return (userAge);
 end;
+
+DROP PROCEDURE IF EXISTS courseLottery;
 
 create
     definer = root@localhost procedure courseLottery()
@@ -87,6 +90,7 @@ begin
     where student_id = userId and course_id = courseId;
 end;
 
+DROP FUNCTION IF EXISTS getAverageCoursePricesByLecturer;
 create
     definer = root@localhost function getAverageCoursePricesByLecturer(userId int) returns decimal(10, 2)
     deterministic
@@ -122,6 +126,8 @@ begin
     return average;
 end;
 
+DROP PROCEDURE IF EXISTS getAverageCoursePricesByLecturers;
+
 create
     definer = root@localhost procedure getAverageCoursePricesByLecturers()
 begin
@@ -130,6 +136,8 @@ begin
     where is_student = 0
     order by avg_course_price desc;
 end;
+
+DROP FUNCTION IF EXISTS getCoursePricesSum;
 
 create
     definer = root@localhost function getCoursePricesSum() returns decimal(10, 2) deterministic
@@ -141,6 +149,8 @@ begin
 
     return (priceSum);
 end;
+
+DROP FUNCTION IF EXISTS getRandomCourseId;
 
 create
     definer = root@localhost function getRandomCourseId() returns int deterministic
@@ -155,6 +165,8 @@ begin
     return courseId;
 end;
 
+DROP FUNCTION IF EXISTS getRandomUserId;
+
 create
     definer = root@localhost function getRandomUserId(isStudent tinyint(1)) returns int deterministic
 begin
@@ -168,6 +180,8 @@ begin
 
     return userId;
 end;
+
+DROP PROCEDURE IF EXISTS getUserAge;
 
 create
     definer = root@localhost procedure getUserAge(IN userId int)

@@ -51,9 +51,9 @@ def requires_auth(f):
  
     return decorated
  
-def build_profile(credentials):
+def build_profile(user):
     return { 
-        'user': credentials['user'],
+        'user': user,
         'exp': time.time()+jwt_expireoffset }
  
 def authenticate():
@@ -65,12 +65,11 @@ def authenticate():
     # authenticate against db
     try:
         user = authenticate_user(credentials)
-        credentials['user'] = user
     except Exception as error_message:
         logging.exception("Authentication failure")
-        abort(403, f'''Authentication failed for {credentials['user']}: {error_message}''')
+        abort(403, f'''Authentication failed for user={credentials['user']}: {error_message}''')
  
-    token = jwt.encode(build_profile(credentials), jwt_secret, algorithm=jwt_algorithm)
+    token = jwt.encode(build_profile(user), jwt_secret, algorithm=jwt_algorithm)
 
     logging.info(f'''Authentication successful for user_id={credentials['user']['id']}''')
     return { 'token': token }
@@ -100,7 +99,8 @@ def register(values):
     values['password_hash'] = bcrypt.hash(values['password'])
     del values['password']
     new_user = user_ctrl.create_user(values)
-    return { 'message': 'you have been registered', 'user': new_user }
+    token = jwt.encode(build_profile(new_user), jwt_secret, algorithm=jwt_algorithm)
+    return { 'message': 'you have been registered', 'user': new_user, 'token': token }
 
 def get_user_id_from_jwt():
     authenticated_user = get_jwt_credentials()
