@@ -7,7 +7,7 @@ from . import *
 
 def local_db_setup():
     db_url = f'mysql+mysqldb://{os.getenv("SQL_USER")}:{os.getenv("SQL_PASS")}@{os.getenv("SQL_HOST")}:{os.getenv("SQL_PORT")}/{os.getenv("SQL_DB")}'
-    engine = create_engine(db_url, future=True, echo=True)
+    engine = create_engine(db_url, future=True, echo=False)
 
     # Drop tables
     Base.metadata.drop_all(engine, checkfirst=True)

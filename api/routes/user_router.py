@@ -1,35 +1,37 @@
-from bottle import route, get, post, put, delete, request
+from fastapi import APIRouter, Depends, Path, Query, Body
+from api.controller.auth_controller1 import get_current_user
 import api.controller.user_controller as user_ctrl
 import api.controller.enrollment_controller as enrollment_ctrl
-from .auth_router import requires_auth, get_jwt_credentials
+from api.models.auth import User, UserEdit, UserInDB
 
-@get('/users')
+router = APIRouter(
+    prefix='/users',
+    tags=['Users']
+)
+
+@router.get('/')
 def get_all_users():
     return user_ctrl.get_all_users()
 
-@get('/users/<id>')
-def get_user_by_id(id):
+@router.get('/enrollments')
+def get_user_enrollments(current_user: UserInDB = Depends(get_current_user)):
+    print(current_user.id, type(current_user.id))
+    return enrollment_ctrl.get_by_user(current_user.id)
+
+@router.get('/{id}')
+def get_user_by_id(id: int = Path(..., title='User ID')):
     return user_ctrl.get_by_id(id)
 
-@delete('/users/<id>')
-def delete_user(id):
+@router.delete('/{id}')
+def delete_user(id: int = Path(..., title='User ID')):
     return user_ctrl.delete_by_id(id)
 
-@put('/users/<id>')
-def edit_user(id):
-    values = request.json
+@router.put('/{id}')
+def edit_user(user: UserEdit, id: int = Path(..., title='User ID')):
+    values = user.dict(exclude_unset=True)
     return user_ctrl.edit_user(id, values)
 
-@post('/users')
-def create_user():
-    values = request.json
+@router.post('/', deprecated=True)
+def create_user(user: User):
+    values = user.dict(exclude_unset=True)
     return user_ctrl.create_user(values)
-
-@get('/users/enrollments')
-@requires_auth
-def get_user_enrollments():
-    authenticated_user = get_jwt_credentials()
-    print(authenticated_user['user'])
-    user_id = authenticated_user['user']['id']
-    print('in router', authenticated_user, user_id)
-    return enrollment_ctrl.get_by_user(user_id)

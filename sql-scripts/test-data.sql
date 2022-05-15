@@ -1,18 +1,18 @@
 /* students here */
 insert into user (email, password_hash, is_student, school, education, firstname, lastname, dob)
 values
-   ('olee@olee.com', '666999', 1,  'DTU', 'BA', 'Ole', 'Olesen', '1997-08-08'),
-   ('sam@ko.com', '123456', 1, 'KEA', 'Software Development', 'Sam', 'Horacek', '2007-01-02'),
-   ('marek@strucka.com', '12534', 1, 'KEA', 'Software Development', 'Marek', 'Strucka', '1999-04-01'),
-   ('hartmann@gmail.com', '444', 1, 'KEA', 'Web Development', 'Peter', 'Hartmann', '1993-07-22'),
-   ('person@gmail.com', '333', 1, 'KU', 'Datalogi', 'Person', 'McPersonface', '2000-01-01');
+   ('olee@olee.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 1,  'DTU', 'BA', 'Ole', 'Olesen', '1997-08-08'),
+   ('sam@ko.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 1, 'KEA', 'Software Development', 'Sam', 'Horacek', '2007-01-02'),
+   ('marek@strucka.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 1, 'KEA', 'Software Development', 'Marek', 'Strucka', '1999-04-01'),
+   ('hartmann@gmail.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 1, 'KEA', 'Web Development', 'Peter', 'Hartmann', '1993-07-22'),
+   ('person@gmail.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 1, 'KU', 'Datalogi', 'Person', 'McPersonface', '2000-01-01');
 
 /* users here */
 insert into user (email, password_hash, is_student, firstname, lastname, dob)
 values
-       ('darth@vader.com', '555', 0, 'Darth', 'Vader', '2011-01-01'),
-       ('indi@gmail.com', '1345234', 0, 'Indiana', 'Jones', '1998-01-01'),
-       ('sam@novak.com', '123', 0,'Uncle', 'Sam', '2003-01-01');
+       ('darth@vader.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 0, 'Darth', 'Vader', '2011-01-01'),
+       ('indi@gmail.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 0, 'Indiana', 'Jones', '1998-01-01'),
+       ('sam@novak.com', '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK', 0,'Uncle', 'Sam', '2003-01-01');
 
 insert into course (title, description, level, price, platform_sale, category, lecturer_id)
 values

@@ -1,31 +1,37 @@
-from bottle import route, get, post, put, delete, request
-from api.controller.auth_controller import get_user_id_from_jwt, requires_auth
+from api.controller.auth_controller1 import get_current_user
 import api.controller.lecture_controller as lecture_ctrl
+from fastapi import APIRouter, Depends, Path
+from api.models.auth import User
+from db.DbTypes import DbTypes
+from db.sql.lecture import LectureCreate, LectureEdit
 
-@get('/lectures')
+router = APIRouter(
+    prefix='/lectures',
+    tags=['lectures']
+)
+
+@router.get('/')
 def get_all_lectures():
     return lecture_ctrl.get_all_lectures()
 
-@get('/lectures/<id>')
-def get_lecture_by_id(id):
+@router.get('/{id}')
+def get_lecture_by_id(db: DbTypes, id: int = Path(..., title='Lecture ID')):
     return lecture_ctrl.get_by_id(id)
 
-@delete('/lectures/<id>')
-def delete_lecture(id):
+@router.delete('/{id}')
+def delete_lecture(db: DbTypes, id: int = Path(..., title='Lecture ID')):
     return lecture_ctrl.delete_by_id(id)
 
-@put('/lectures/<id>')
-def edit_lecture(id):
-    values = request.json
+@router.patch('/{id}')
+def edit_lecture(db: DbTypes, lecture: LectureEdit, id: int = Path(..., title='Lecture ID')):
+    values = lecture.dict(exclude_unset=True)
     return lecture_ctrl.edit_lecture(id, values)
 
-@put('/courses/lectures/<id>')
-@requires_auth
-def finish_lecture(id):
-    user_id = get_user_id_from_jwt()
-    return lecture_ctrl.finish_lecture(user_id, id)
+@router.put('/finish/{id}')
+def finish_lecture(db: DbTypes, id: int = Path(..., title='Lecture ID'), current_user: User = Depends(get_current_user)):
+    return lecture_ctrl.finish_lecture(current_user.id, id)
 
-@post('/lectures')
-def create_lecture():
-    values = request.json
+@router.post('/')
+def create_lecture(db: DbTypes, lecture: LectureCreate):
+    values = lecture.dict(exclude_unset=True)
     return lecture_ctrl.create_lecture(values)

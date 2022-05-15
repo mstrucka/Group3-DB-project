@@ -1,6 +1,5 @@
 from sqlalchemy.orm import declarative_base, declarative_mixin, declared_attr
 from sqlalchemy import Column, Integer
-
 @declarative_mixin
 class MyMixin:
     @declared_attr
@@ -13,6 +12,3 @@ class MyMixin:
     id = Column(Integer, primary_key=True)
 
 Base = declarative_base()
-
-
-

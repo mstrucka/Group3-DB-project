@@ -15,6 +15,13 @@ def get_by_id(id):
         user = res.to_dict()
     return dict(user=user)
 
+def get_by_email(email: str):
+    with Session() as session:
+        stmt = select(User).where(User.email == email)
+        res = session.execute(stmt).scalars().one()
+        user = res.to_dict()
+    return dict(user=user)
+
 def delete_by_id(id):
     with Session.begin() as session:
         user = session.query(User).filter(User.id == id).one()

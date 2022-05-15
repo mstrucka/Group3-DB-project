@@ -1,27 +1,32 @@
-from bottle import route, get, post, put, delete, request
-from api.controller.auth_controller import get_user_id_from_jwt, requires_auth
+from fastapi import APIRouter, Depends, Path
+from api.controller.auth_controller1 import get_current_user
 import api.controller.payment_controller as payment_ctrl
+from api.models.auth import User
+from db.sql.payment import PaymentCreate, PaymentEdit
 
-@get('/payments')
+router = APIRouter(
+    prefix='/payments',
+    tags=['Payments']
+)
+
+@router.get('/')
 def get_all_payments():
     return payment_ctrl.get_all_payments()
 
-@get('/payments/<id>')
-def get_payment_by_id(id):
+@router.get('/{id}')
+def get_payment_by_id(id: int = Path(..., title='Payment ID')):
     return payment_ctrl.get_by_id(id)
 
-@delete('/payments/<id>')
-def delete_payment(id):
+@router.delete('/{id}')
+def delete_payment(id: int = Path(..., title='Payment ID')):
     return payment_ctrl.delete_by_id(id)
 
-@put('/payments/<id>')
-def edit_payment(id):
-    values = request.json
+@router.put('/{id}')
+def edit_payment(payment: PaymentEdit, id: int = Path(..., title='Payment ID')):
+    values = payment.dict(exclude_unset=True)
     return payment_ctrl.edit_payment(id, values)
 
-@post('/payments')
-@requires_auth
-def create_payment():
-    user_id = get_user_id_from_jwt()
-    values = request.json
-    return payment_ctrl.create_payment(user_id, values)
+@router.post('/')
+def create_payment(payment: PaymentCreate, current_user: User = Depends(get_current_user)):
+    values = payment.dict(exclude_unset=True)
+    return payment_ctrl.create_payment(current_user.id, values)
