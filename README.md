@@ -9,3 +9,16 @@ Then you need to do the following steps:
 - Run ‘data-inserts.sql’, in order to populate the database.
 
 After completion of these steps, your setup is finished.
+
+## How to run server
+Server is run with FastAPI
+
+Make sure to add your local db settings to .env file. See .env-example for reference.
+
+Locally:
+Run the following command: uvicorn main:app --reload
+
+Default port is 8000
+
+Swagger interactive docs are auto-generated. Go to /docs to access it.
+The API is a mounted app which lives on /api/v1. To access its docs go to /api/v1/dpcs
