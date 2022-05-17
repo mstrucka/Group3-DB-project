@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Path, Query, Request, Body
-import api.controller.enrollment_controller as enrollment_ctrl
+import api.controller.sql.enrollment_controller as enrollment_ctrl
 from db.DbTypes import DbTypes
 from db.sql.enrollment import EnrollmentEdit
 

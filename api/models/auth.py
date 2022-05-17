@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from api.controller.mongo.PyObjectId import PyObjectId
+from bson.objectid import ObjectId
 
 class Token(BaseModel):
     access_token: str
@@ -31,5 +33,10 @@ class UserEdit(BaseModel):
     description: str | None = None
 
 class UserInDB(User):
-    id: int
+    mongo_id: PyObjectId | None = Field(alias='_id')
+    id: int | None = None
     password_hash: str
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}

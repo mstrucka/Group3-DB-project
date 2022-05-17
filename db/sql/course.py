@@ -1,9 +1,11 @@
+from api.controller.mongo.PyObjectId import PyObjectId
+
 from . models import MyMixin, Base
 from . association_tables import course_lectures
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 class Course(MyMixin, SerializerMixin, Base):
     title = Column(String(45), nullable=False)
     description = Column(String(500), nullable=False)

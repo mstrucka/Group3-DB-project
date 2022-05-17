@@ -19,4 +19,4 @@ class PaymentEdit(BaseModel):
     is_refund: bool | None = None
     total: float | None = None
 class PaymentCreate(BaseModel):
-    course_ids: List[int]
+    course_ids: List[int | str]

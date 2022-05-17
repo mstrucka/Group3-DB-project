@@ -5,4 +5,4 @@ from . import (
     payment_router,
     enrollment_router,
     resource_router,
-    auth_router1)
+    auth_router1,)

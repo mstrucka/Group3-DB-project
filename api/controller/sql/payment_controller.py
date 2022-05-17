@@ -2,7 +2,7 @@ from db.sql.sql import Session
 from db.sql.payment import Payment
 from db.sql.enrollment import Enrollment
 from sqlalchemy import false, select, delete, update, insert
-import api.controller.course_controller as course_ctrl
+import api.controller.sql.course_controller as course_ctrl
 
 
 def get_all_payments():

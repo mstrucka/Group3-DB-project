@@ -1,7 +1,6 @@
 from . models import MyMixin, Base
 from sqlalchemy import Column, String, Date, Boolean
 from sqlalchemy_serializer import SerializerMixin
-from pydantic import BaseModel
 class User(Base, MyMixin, SerializerMixin):
     #serialize_rules = ('-password_hash',)
 
@@ -18,3 +17,4 @@ class User(Base, MyMixin, SerializerMixin):
 
     def __repr__(self) -> str:
         return f'''<User(id={self.id}, firstname={self.firstname}, lastname={self.lastname}>'''
+

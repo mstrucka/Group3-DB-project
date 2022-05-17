@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Path, Query, Body
-import api.controller.resource_controller as resource_ctrl
+import api.controller.sql.resource_controller as resource_ctrl
 from db.sql.resource import ResourceCreate, ResourceEdit
 
 router = APIRouter(

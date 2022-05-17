@@ -1,8 +1,10 @@
 from dotenv import load_dotenv
+
+from api.routes.mongo import payment_router_mongo
 load_dotenv()
 from fastapi import FastAPI
-from api.routes import *
-
+from api.routes.sql import *
+from api.routes.mongo import *
 import logging
 log = logging.basicConfig(
     level=logging.DEBUG, 
@@ -13,14 +15,21 @@ log = logging.basicConfig(
 
 app = FastAPI(debug=True, description='DB for devs project. Get rect')
 
-api_app = FastAPI(debug=True, description='API app (might be different app per db type..)')
+sql_app = FastAPI(debug=True, description='SQL app (might be different app per db type..)')
+mongo_app = FastAPI(debug=True, description='Mongo DB app')
 
-api_app.include_router(auth_router1.router)
-api_app.include_router(course_router.router, prefix='/{db}')
-api_app.include_router(lecture_router.router, prefix='/{db}')
-api_app.include_router(enrollment_router.router, prefix='/{db}')
-api_app.include_router(resource_router.router, prefix='/{db}')
-api_app.include_router(user_router.router, prefix='/{db}')
-api_app.include_router(payment_router.router, prefix='/{db}')
+sql_app.include_router(auth_router1.router)
+sql_app.include_router(course_router.router)
+sql_app.include_router(lecture_router.router)
+sql_app.include_router(enrollment_router.router)
+sql_app.include_router(resource_router.router)
+sql_app.include_router(user_router.router)
+sql_app.include_router(payment_router.router)
 
-app.mount('/api/v1', app=api_app, name='API app')
+mongo_app.include_router(course_router_mongo.router)
+mongo_app.include_router(user_router_mongo.router)
+mongo_app.include_router(auth_router_mongo.router)
+mongo_app.include_router(payment_router_mongo.router)
+
+app.mount('/api/v1/nosql', app=mongo_app, name='Mongo app')
+app.mount('/api/v1/sql', app=sql_app, name='SQL app')

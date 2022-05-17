@@ -1,13 +1,15 @@
 from fastapi import Depends, HTTPException, status
-from api.models.auth import User, UserCreate, UserInDB, TokenData
-from api.controller.user_controller import get_by_email
+from api.models.auth import UserCreate, UserInDB, TokenData
+import api.controller.sql.user_controller as user_ctrl_sql
+import api.controller.mongo.user_controller as user_ctrl_mongo
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import JWTError, jwt
-import api.controller.user_controller as user_ctrl
+import api.controller.sql.user_controller as user_ctrl
+from db.DbTypes import DbTypes
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/v1/auth/token')
+oauth2_scheme_sql = OAuth2PasswordBearer(tokenUrl='/api/v1/sql/auth/token')
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = '372c63277d2be40050086c25a2b0272e48930f0046f3f4195275b78ffc7daba0'
@@ -40,10 +42,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
     
 def get_user(email: str):
-    user_dict = get_by_email(email)
+    user_dict = user_ctrl_sql.get_by_email(email)
     return UserInDB(**user_dict['user'])
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(token: str = Depends(oauth2_scheme_sql)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",

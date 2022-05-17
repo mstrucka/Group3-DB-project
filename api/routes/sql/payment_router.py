@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Path
-from api.controller.auth_controller1 import get_current_user
-import api.controller.payment_controller as payment_ctrl
+from api.controller.sql.auth_controller1 import get_current_user
+import api.controller.sql.payment_controller as payment_ctrl
 from api.models.auth import User
 from db.sql.payment import PaymentCreate, PaymentEdit
 
