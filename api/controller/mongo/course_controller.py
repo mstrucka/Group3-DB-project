@@ -1,5 +1,6 @@
 
-from db.mongodb.db import course_collection
+from pprint import pprint
+from db.mongodb.db import course_collection, course_of_the_day_collection
 from db.mongodb.course import CourseSchema
 from bson.objectid import ObjectId
 
@@ -9,12 +10,17 @@ async def get_all_courses() -> list:
         courses.append(CourseSchema(**course))
     return courses
 
+async def get_course_of_the_day() -> dict:
+    cursor = course_of_the_day_collection.find().sort('date', -1).limit(1)
+    course_of_the_day = await cursor.to_list(length=1)
+    
+    course_id = course_of_the_day[0]['course_id']
+    # now get the course
+    course_of_the_day = await course_collection.find_one({'_id': ObjectId(course_id)})
+    return CourseSchema(**course_of_the_day)
+
 async def get_course_by_id(id: str) -> dict:
     course = await course_collection.find_one({'_id': ObjectId(id)})
-    return course
-
-async def get_course_by_email(email: str) -> dict:
-    course = await course_collection.find_one({'email': email})
     return course
 
 async def delete_course_by_id(id: str) -> bool:

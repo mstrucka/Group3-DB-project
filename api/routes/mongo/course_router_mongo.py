@@ -15,8 +15,9 @@ async def get_all_courses():
     return res
 
 @router.get('/today')
-def get_course_of_the_day(db: DbTypes):
-    return course_ctrl.get_todays_course_of_the_day()
+async def get_course_of_the_day():
+    res = await course_ctrl.get_course_of_the_day()
+    return res
 
 @router.get('/search')
 async def search_courses(
