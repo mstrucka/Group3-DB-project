@@ -1,39 +1,30 @@
-from py2neo import Graph, Node, Relationship
-import os
+from py2neo import Node, Relationship
 import json
-from db.neo4jdb.neo import App
-
+from db.neo4jdb.neo import graph
 from db.neo4jdb.lecture import LectureCreateSchema, LectureUpdateSchema
-
-# TODO: connection
-# uri = os.getenv("NEO4J_URI")
-# user = os.getenv("NEO4J_NAME")
-# password = os.getenv("NEO4J_PASS")
-# my_graph = Graph(uri, auth=(user, password))
-
 
 # TODO: return
 def get_all_lectures():
-    result = App.graph.nodes.match("Lecture").all()
+    result = graph.nodes.match("Lecture").all()
     return json.dumps([{"lecture": dict(row["lecture"])} for row in result])
 
 
 # TODO: return
 def get_by_name(name):
-    result = App.graph.nodes.match("Lecture", name=name)
+    result = graph.nodes.match("Lecture", name=name)
     return json.dumps({"Lecture": result})
 
 
 # TODO: functionality
 def get_by_course_name(name):
-    Graph().nodes.match(name=name).first()
-    result = App.graph.match(nodes=[name], r_type="IS_PART_OF_COURSE").all()
+    graph.nodes.match(name=name).first()
+    result = graph.match(nodes=[name], r_type="IS_PART_OF_COURSE").all()
     return json.dumps([{"lecture": dict(row["lecture"])} for row in result])
 
 
 # TODO: return
 def delete_by_name(name):
-    App.graph.delete("Lecture", name=name)
+    graph.delete("Lecture", name=name)
 
 
 # TODO: functionality
@@ -41,8 +32,8 @@ def edit_lecture(name, editLecture: LectureUpdateSchema):
     title = editLecture.title
     description = editLecture.description
     index = editLecture.index
-    lectureNode = App.graph.nodes.match("Lecture", name=name)
-    tx = App.graph.begin()
+    lectureNode = graph.nodes.match("Lecture", name=name)
+    tx = graph.begin()
     tx.run(
         "MATCH (l:Lecture) {name: $name} "
         "SET l.title: $title, l.description: $description, l.index: $index"
@@ -60,7 +51,7 @@ def edit_lecture(name, editLecture: LectureUpdateSchema):
 def create_lecture(createLectureObject: LectureCreateSchema):
     lectureNode = Node("Lecture", id=createLectureObject.id, title=createLectureObject.title,
                        description=createLectureObject.description, index=createLectureObject.index)
-    tx = App.graph.begin()
+    tx = graph.begin()
     tx.create(lectureNode)
     if (createLectureObject.courseName != None):
         lectureCourseRelShip = Relationship(lectureNode, "IS_PART_OF_COURSE", createLectureObject.courseName)

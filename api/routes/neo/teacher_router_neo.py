@@ -10,7 +10,8 @@ router = APIRouter(
 
 @router.get('/')
 def get_all_teachers():
-    return teacher_ctrl.get_all_teachers()
+    res = teacher_ctrl.get_all_teachers()
+    return res
 
 
 @router.get('/{name}')
