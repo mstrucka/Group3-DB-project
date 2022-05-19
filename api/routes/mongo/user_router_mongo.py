@@ -16,8 +16,9 @@ async def get_all_users():
     return res
 
 @router.get('/enrollments')
-def get_user_enrollments(current_user: UserInDB = Depends(get_current_user)):
-    return enrollment_ctrl.get_by_user(current_user.id)
+async def get_user_enrollments(current_user: UserInDB = Depends(get_current_user)):
+    res = await enrollment_ctrl.get_by_user(current_user.mongo_id)
+    return res
 
 @router.get('/{id}')
 async def get_user_by_id(id: str = Path(..., title='User ID')):

@@ -37,7 +37,9 @@ async def create_payment(user_id, data):
         enrollment = {
             'student_id': user_id,
             'course_id': id,
-            'payment_id': payment.inserted_id}
+            'payment_id': payment.inserted_id,
+            'finished': False
+        }
         enrollments.append(enrollment)
 
     await enrollment_collection.insert_many(enrollments)
