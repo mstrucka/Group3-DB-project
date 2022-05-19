@@ -8,7 +8,7 @@ class CourseCreateSchema(BaseModel):
     level: int
     price: float
     onSale: bool
-    isCourseOfTheDay: bool | False
+    isCourseOfTheDay: bool | None
     teacherName: str | None
     lectureName: str | None
 
@@ -19,7 +19,7 @@ class CourseUpdateSchema(BaseModel):
     level: int
     price: float
     onSale: bool
-    isCourseOfTheDay: bool | False
+    isCourseOfTheDay: bool | None
     teacherName: str | None
     lectureName: str | None
 

@@ -1,11 +1,9 @@
 from dotenv import load_dotenv
-
-from api.routes.neo import *
-
 load_dotenv()
 from fastapi import FastAPI
 from api.routes.sql import *
 from api.routes.mongo import *
+from api.routes.neo import *
 
 import logging
 
@@ -44,4 +42,4 @@ neo4j_app.include_router(lecture_router_neo.router)
 
 app.mount('/api/v1/nosql', app=mongo_app, name='Mongo app')
 app.mount('/api/v1/sql', app=sql_app, name='SQL app')
-app.mount('/api/v1/neo4j', app=neo4j_app, name='Neo4j app')
+app.mount('/api/v1/graph', app=neo4j_app, name='Neo4j app')
