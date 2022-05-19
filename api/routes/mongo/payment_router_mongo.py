@@ -29,5 +29,5 @@ def edit_payment(payment: PaymentEdit, id: int = Path(..., title='Payment ID')):
 @router.post('/')
 async def create_payment(payment: PaymentCreate, current_user: UserInDB = Depends(get_current_user)):
     data = payment.dict(exclude_unset=True)
-    res = await payment_ctrl.create_payment(current_user.id, data)
+    res = await payment_ctrl.create_payment(current_user.mongo_id, data)
     return res

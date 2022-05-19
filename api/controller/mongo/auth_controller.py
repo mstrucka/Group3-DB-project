@@ -1,3 +1,5 @@
+import logging
+import sys
 from fastapi import Depends, HTTPException, status
 from api.models.auth import UserCreate, UserInDB, TokenData, User
 import api.controller.mongo.user_controller as user_ctrl_mongo
@@ -11,7 +13,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = '372c63277d2be40050086c25a2b0272e48930f0046f3f4195275b78ffc7daba0'
 ALGORITHM = 'HS256'
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 300
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -40,8 +42,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     
 async def get_user(email: str):
     user_dict = await user_ctrl_mongo.get_user_by_email(email)
-    print(user_dict)
-    return User(**user_dict)
+    return UserInDB(**user_dict)
 
 async def get_current_user(token: str = Depends(oauth2_scheme_nosql)):
     credentials_exception = HTTPException(

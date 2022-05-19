@@ -1,6 +1,4 @@
 from dotenv import load_dotenv
-
-from api.routes.mongo import payment_router_mongo
 load_dotenv()
 from fastapi import FastAPI
 from api.routes.sql import *
