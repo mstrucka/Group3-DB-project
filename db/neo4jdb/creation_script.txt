@@ -1,0 +1,87 @@
+// database creation script without specifying the properties of the nodes, but having them for relationships
+CREATE (:Resource)-[:IS_FOR {lectureId: "string"}]->(:Lecture)-[:IS_PART_OF {courseId: "string"}]->(Course:Course)<-[:Progress {lectureId: "string"}]-(Student:Student),
+(:Payment)-[:MADE_BY]->(Student),
+(Course)-[:TAUGHT_BY]->(:Teacher)
+
+// population script starts here
+// creation of student, payments and connecting them together via MADE_BY relationship
+CREATE (Marek:Student {name: 'Marek Strucka', email: 'strucc@gmail.com', born: 1998, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'}),
+(Sam:Student {name: 'Sam Horacek', email: 'samko@gmail.com', born: 1999, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'}),
+(Christian:Student {name: 'Marek Strucka', email: 'christian@gmail.com', born: 1998, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'}),
+(Test:Student {name: 'Test Test', email: 'test@gmail.com', born: 1998, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'}),
+(Tester:Student {name: 'Marek Tester', email: 'tester@gmail.com', born: 1998, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'}),
+(Ole:Student {name: 'Ole Olessen', email: 'olee@olee.com', born: 1997, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'})
+
+CREATE (Payment1:Payment {id: '1', date: date("2021-10-10"), price: 50.50}),
+(Payment2:Payment {id: '2', date: date("2021-11-10"), price: 420.50}),
+(Payment3:Payment {id: '3', date: date("2021-10-11"), price: 70.50}),
+(Payment4:Payment {id: '4', date: date("2021-12-12"), price: 20}),
+(Payment5:Payment {id: '5', date: date("2021-12-10"), price: 10})
+
+CREATE
+  (Payment1)-[:MADE_BY]->(Marek),
+  (Payment2)-[:MADE_BY]->(Marek),
+  (Payment3)-[:MADE_BY]->(Sam),
+  (Payment4)-[:MADE_BY]->(Test),
+  (Payment5)-[:MADE_BY]->(Christian)
+
+// Creation of Courses and Teachers and TAUGHT_BY
+CREATE
+(DarkSide: Course {id: 1, title: 'Introduction to the Dark Side', description: 'Learn the basics of the Dark Side, and how to become a true sith lord', level: 1, price: 50.00, onSale: false, isCourseOfTheDay: false}),
+(Whipping: Course {id: 2, title: 'Advanced Whipping', description: 'Take your whipping to the next level in this advanced whipping course
+        featuring the one and only Indiana Jones. Using advanced whipping techniques and
+        tricks you will be guided towards whipping mastery.', level: 3, price: 40.00, onSale: false, isCourseOfTheDay: false}),
+(Guns: Course {id: 3, title: 'Guns and how to use them', description: 'In this course you will not only learn to wield powerful weapons,
+        but also learn the history of guns. We will also touch upon different military skill and strategic war
+        concepts, as well as practical tips on warfare in the front line. You will also learn how to make
+        molotov cocktails of course. YMRA EHT NIOJ', level: 2, price: 66, onSale: false, isCourseOfTheDay: false}),
+(KISS: Course {id: 4, title: 'KISS and other principles', description: 'Keep It Simple Stupid, no refunds!', level: 2, price: 10.00, onSale: false, isCourseOfTheDay: false}),
+(DeveloperHowTo: Course {id: 5, title: 'Surviving as a developer', description: 'Learn how to preserve and ration bits. Dont take too large bytes when consuming', level: 3, price: 47.71, onSale: false, isCourseOfTheDay: false}),
+(SQL: Course {id: 6, title: 'How to SQL', description: 'Learn the basics of the structured query language.', level: 3, price: 99.99, onSale: false, isCourseOfTheDay: false})
+
+CREATE (Darth:Teacher {name: 'Darth Vader', email: 'darth@vader.com', born: 1998, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'}),
+(Indian:Teacher {name: 'Indiana Jones', email: 'indi@gmail.com', born: 1999, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'}),
+(UncleSam:Teacher {name: 'Uncle Sam', email: 'sam@novak.com', born: 1999, password_hash: '$2b$12$7N2qXk20g3FfX9/3cRjmGu2V/dcmldItpjs.8LQEAhami6cbRz5nK'})
+
+CREATE
+  (DarkSide)-[:TAUGHT_BY]->(Darth),
+  (Whipping)-[:TAUGHT_BY]->(Indian),
+  (Guns)-[:TAUGHT_BY]->(Indian),
+  (KISS)-[:TAUGHT_BY]->(UncleSam),
+  (DeveloperHowTo)-[:TAUGHT_BY]->(UncleSam),
+  (SQL)-[:TAUGHT_BY]->(UncleSam)
+
+// Creation of Lectures and Resources
+CREATE (IntroToSQL: Lecture {id: 1, title: 'Intro to SQL', description: 'SQL basics', index: 1}),
+(SQL2: Lecture {id: 2, title: 'Intro to SQL2', description: 'SQL basics 2', index: 2}),
+(SQL3: Lecture {id: 3, title: 'Intro to SQL3', description: 'SQL basics 3', index: 3}),
+(SQL4: Lecture {id: 4, title: 'Intro to SQL4', description: 'SQL basics 4', index: 4}),
+(GunsIntro: Lecture {id: 5, title: 'Intro to guns', description: 'How to handle a gun', index: 1})
+
+CREATE (SQLvideo1: Resource {id: 1, name: 'SQL intro video 1', uri:'youtube.com/sql'}),
+(SQLvideo2: Resource {id: 2, name: 'SQL intro video 2', uri:'youtube.com/sql2'}),
+(SQLvideo3: Resource {id: 3, name: 'SQL intro video 3', uri:'youtube.com/sql3'}),
+(SQLvideo4: Resource {id: 4, name: 'SQL intro video 4', uri:'youtube.com/sql4'}),
+(GunsVideo: Resource {id: 5, name: 'Guns intro video 1', uri:'youtube.com/guns'})
+
+// Creation of IS_FOR_LECTURE, IS_PART_OF_COURSE and IS_ENROLLED_IN_COURSE
+CREATE
+  (SQLvideo1)-[:IS_FOR_LECTURE {id: 1}]->(IntroToSQL),
+  (SQLvideo2)-[:IS_FOR_LECTURE  {id: 1}]->(IntroToSQL),
+  (SQLvideo3)-[:IS_FOR_LECTURE  {id: 1}]->(IntroToSQL),
+  (SQLvideo4)-[:IS_FOR_LECTURE  {id: 2}]->(SQL2),
+  (GunsVideo)-[:IS_FOR_LECTURE  {id: 5}]->(GunsIntro)
+
+CREATE
+  (IntroToSQL)-[:IS_PART_OF_COURSE {id: 6}]->(SQL),
+  (SQL2)-[:IS_PART_OF_COURSE  {id: 6}]->(SQL),
+  (SQL3)-[:IS_PART_OF_COURSE  {id: 6}]->(SQL),
+  (SQL4)-[:IS_PART_OF_COURSE  {id: 6}]->(SQL),
+  (GunsIntro)-[:IS_PART_OF_COURSE  {id: 3}]->(Guns)
+
+CREATE
+  (Marek)-[:IS_ENROLLED_IN_COURSE {progress_lectureId: 0}]->(SQL),
+  (Marek)-[:IS_ENROLLED_IN_COURSE  {progress_lectureId: 0}]->(GunsIntro),
+  (Test)-[:IS_ENROLLED_IN_COURSE  {progress_lectureId: 0}]->(SQL),
+  (Tester)-[:IS_ENROLLED_IN_COURSE  {progress_lectureId: 1}]->(SQL),
+  (Ole)-[:IS_ENROLLED_IN_COURSE  {progress_lectureId: 5}]->(GunsIntro)
