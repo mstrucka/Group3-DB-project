@@ -1,10 +1,10 @@
-from bson import json_util
+import datetime
 from py2neo import Node, Relationship
 import json
 from db.neo4jdb.payment import PaymentCreateSchema
 from db.neo4jdb.neo import graph
 
-# TODO: return
+
 def get_all_payments():
     result = graph.nodes.match("Payment")
     to_return = []
@@ -13,27 +13,32 @@ def get_all_payments():
         to_return.append(json_doc)
     return to_return
 
-# TODO: return
+
 def get_by_id(id):
-    result = graph.nodes.match("Payment", id=id)
-    return json.dumps({"payment": result})
+    result = graph.nodes.match("Payment", id=id).first()
+    return json.dumps(result, default=str)
 
-# TODO: return
+
+# TODO: return?
 def delete_by_id(id):
-    result = graph.run(
-        "MATCH (p:Payment) {id: $id} "
-        "DETACH DELETE p"
-    )
+    tx = graph.begin()
+    nodeToDelete = graph.nodes.match("Payment", id=id).first()
+    tx.delete(nodeToDelete)
+    tx.commit()
 
-# TODO: functionality
+
+# TODO: works when no relatinships only, DATE!
 def create_payment(createPaymentObject: PaymentCreateSchema):
     paymentNode = Node("Payment", id=createPaymentObject.id,
-                        date=createPaymentObject.date, price=createPaymentObject.price)
-    paymentRelship = Relationship(paymentNode, "MADE_BY", createPaymentObject.studentName)
-    studentNode = graph.nodes.match("Student", name=createPaymentObject.studentName)
-    studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", createPaymentObject.courseName)
+                       date=datetime.MAXYEAR, price=createPaymentObject.price)
     tx = graph.begin()
     tx.create(paymentNode)
-    tx.create(paymentRelship)
-    tx.create(studentRelship)
+    if createPaymentObject.studentName is not None:
+        paymentRelship = Relationship(paymentNode, "MADE_BY", createPaymentObject.studentName)
+        tx.create(paymentRelship)
+    studentNode = graph.nodes.match("Student", name=createPaymentObject.studentName)
+    if createPaymentObject.courseName is not None:
+        courseNode = graph.nodes.match("Course", title=createPaymentObject.courseName)
+        studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
+        tx.create(studentRelship)
     tx.commit()

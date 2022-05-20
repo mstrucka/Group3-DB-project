@@ -1,11 +1,10 @@
 from bson import json_util
-from py2neo import Node, Relationship
+from py2neo import Node, Relationship, NodeMatcher
 import json
 from db.neo4jdb.user import UserCreateSchema, UserUpdateSchema
 from db.neo4jdb.neo import graph
 
 
-# TODO: return
 def get_all_students():
     result = graph.nodes.match("Student")
     to_return = []
@@ -15,21 +14,22 @@ def get_all_students():
     return to_return
 
 
-# TODO: return
 def get_by_name(name):
-    result = graph.nodes.match("Student", name=name)
-    return result
+    result = graph.nodes.match("Student", name=name).first()
+    return json.dumps(result, default=json_util.default)
 
 
-# TODO: return
 def get_by_email(email):
-    result = graph.nodes.match("Student", email=email)
-    return result
+    result = graph.nodes.match("Student", email=email).first()
+    return json.dumps(result, default=json_util.default)
 
 
 # TODO: return
 def delete_by_name(name):
-    result = graph.delete("Student", name=name)
+    tx = graph.begin()
+    nodeToDelete = graph.nodes.match("Student", name=name).first()
+    tx.delete(nodeToDelete)
+    tx.commit()
 
 
 # TODO: return
@@ -43,7 +43,7 @@ def edit_student(name, editStudent: UserUpdateSchema):
 
 
 
-# TODO: functionality, hash PW
+# TODO: relationship, hash PW
 def create_student(createStudentObject: UserCreateSchema):
     studentNode = Node("Student", name=createStudentObject.name, email=createStudentObject.email,
                        born=createStudentObject.born, password_hash=createStudentObject.password)

@@ -2,14 +2,12 @@ from pydantic import BaseModel
 
 
 class ResourceCreateSchema(BaseModel):
-    title: str
-    description: str
-    index: int
-    lectureName: str
+    id: str
+    name: str
+    uri: str
+    lectureName: str | None
 
 
 class ResourceUpdateSchema(BaseModel):
-    title: str
-    description: str
-    index: int
-    lectureName: str
+    uri: str
+    lectureName: str | None

@@ -4,7 +4,6 @@ import json
 from db.neo4jdb.neo import graph
 from db.neo4jdb.lecture import LectureCreateSchema, LectureUpdateSchema
 
-# TODO: return
 def get_all_lectures():
     result = graph.nodes.match("Lecture")
     to_return = []
@@ -14,30 +13,31 @@ def get_all_lectures():
     return to_return
 
 
-# TODO: return
-def get_by_name(name):
-    result = graph.nodes.match("Lecture", name=name)
-    return json.dumps({"Lecture": result})
-
+def get_by_title(title):
+    result = graph.nodes.match("Lecture", title=title).first()
+    return json.dumps(result, default=json_util.default)
 
 # TODO: functionality
-def get_by_course_name(name):
-    graph.nodes.match(name=name).first()
-    result = graph.match(nodes=[name], r_type="IS_PART_OF_COURSE").all()
+def get_by_course_title(title):
+    graph.nodes.match(title=title).first()
+    result = graph.match(nodes=[title], r_type="IS_PART_OF_COURSE").all()
     return json.dumps([{"lecture": dict(row["lecture"])} for row in result])
 
 
 # TODO: return
-def delete_by_name(name):
-    graph.delete("Lecture", name=name)
+def delete_by_title(title):
+    tx = graph.begin()
+    nodeToDelete = graph.nodes.match("Lecture", title=title).first()
+    tx.delete(nodeToDelete)
+    tx.commit()
 
 
 # TODO: functionality
-def edit_lecture(name, editLecture: LectureUpdateSchema):
+def edit_lecture(title, editLecture: LectureUpdateSchema):
     title = editLecture.title
     description = editLecture.description
     index = editLecture.index
-    lectureNode = graph.nodes.match("Lecture", name=name)
+    lectureNode = graph.nodes.match("Lecture", title=title)
     tx = graph.begin()
     tx.run(
         "MATCH (l:Lecture) {name: $name} "
@@ -52,7 +52,7 @@ def edit_lecture(name, editLecture: LectureUpdateSchema):
     tx.commit()
 
 
-# TODO: functionality
+# TODO: relationships
 def create_lecture(createLectureObject: LectureCreateSchema):
     lectureNode = Node("Lecture", id=createLectureObject.id, title=createLectureObject.title,
                        description=createLectureObject.description, index=createLectureObject.index)

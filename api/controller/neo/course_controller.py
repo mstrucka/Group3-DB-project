@@ -4,7 +4,6 @@ import json
 from db.neo4jdb.course import CourseCreateSchema, CourseUpdateSchema
 from db.neo4jdb.neo import graph
 
-# TODO: return
 def get_all_courses():
     result = graph.nodes.match("Course")
     to_return = []
@@ -14,33 +13,34 @@ def get_all_courses():
     return to_return
 
 
-# TODO: return
-def get_by_name(name):
-    result = graph.nodes.match("Course", name=name)
-    print(result)
-    return json.dumps({"Course": result.__dict__})
+def get_by_title(title):
+    result = graph.nodes.match("Course", title=title).first()
+    return json.dumps(result, default=json_util.default)
 
 
 # TODO: functionality
-def get_by_course_name(name):
-    graph.nodes.match(name=name).first()
-    result = graph.match(nodes=[name], r_type="IS_PART_OF_COURSE").all()
-    return json.dumps([{"lecture": dict(row["lecture"])} for row in result])
+def get_by_course_title(title):
+    courseNode = graph.nodes.match("Course", title=title).first()
+    result = graph.match(courseNode, r_type="IS_PART_OF_COURSE")
+    return json.dumps(result, default=json_util.default)
 
 
 # TODO: return
-def delete_by_name(name):
-    graph.delete("Course", name=name)
+def delete_by_title(title):
+    tx = graph.begin()
+    nodeToDelete = graph.nodes.match("Course", title=title).first()
+    tx.delete(nodeToDelete)
+    tx.commit()
 
 
 # TODO: functionality
-def edit_course(name, editCourse: CourseUpdateSchema):
+def edit_course(title, editCourse: CourseUpdateSchema):
     onSale = editCourse.onSale
     description = editCourse.description
     level = editCourse.level
     price = editCourse.price
     isCoD = editCourse.isCourseOfTheDay
-    courseNode = graph.nodes.match("Course", name=name)
+    courseNode = graph.nodes.match("Course", title=title)
     tx = graph.begin()
     tx.run(
         "MATCH (c:Course) {name: $name} "
@@ -56,8 +56,8 @@ def edit_course(name, editCourse: CourseUpdateSchema):
     tx.commit()
 
 
-# TODO: functionality
-def create_lecture(course: CourseCreateSchema):
+# TODO: relationships
+def create_course(course: CourseCreateSchema):
     courseNode = Node("Course", id=course.id, title=course.title,
                       description=course.description, level=course.level, onSale=course.onSale,
                       isCourseOfTheDay=course.isCourseOfTheDay)

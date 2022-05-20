@@ -7,7 +7,6 @@ from db.neo4jdb.user import UserCreateSchema, UserUpdateSchema
 from db.neo4jdb.neo import graph
 
 
-# TODO: return
 def get_all_teachers():
     result = graph.nodes.match("Teacher")
     to_return = []
@@ -17,16 +16,14 @@ def get_all_teachers():
     return to_return
 
 
-# TODO: return
 def get_by_name(name):
-    result = graph.nodes.match("Teacher", name=name)
-    return json.dumps([{"teacher": dict(row["teacher"])} for row in result])
+    result = graph.nodes.match("Teacher", name=name).first()
+    return json.dumps(result, default=json_util.default)
 
 
-# TODO: return
 def get_by_email(email):
-    result = graph.nodes.match("Teacher", email=email)
-    return result
+    result = graph.nodes.match("Teacher", email=email).first()
+    return json.dumps(result, default=json_util.default)
 
 
 # TODO: check functionality
@@ -38,7 +35,10 @@ def get_by_course_name(name):
 
 # TODO: return
 def delete_by_name(name):
-    graph.delete("Teacher", name=name)
+    tx = graph.begin()
+    nodeToDelete = graph.nodes.match("Teacher", name=name).first()
+    tx.delete(nodeToDelete)
+    tx.commit()
 
 
 # TODO: return
@@ -50,7 +50,7 @@ def edit_teacher(name, editTeacher: UserUpdateSchema):
     )
 
 
-# TODO: check functionality, hash PW
+# TODO: relationship, hash PW
 def create_teacher(createTeacherObject: UserCreateSchema):
     teacherNode = Node("Teacher", name=createTeacherObject.name, email=createTeacherObject.email,
                        born=createTeacherObject.born, password_hash= createTeacherObject.password)
