@@ -41,6 +41,7 @@ neo4j_app.include_router(student_router_neo.router)
 neo4j_app.include_router(teacher_router_neo.router)
 neo4j_app.include_router(resource_router_neo.router)
 neo4j_app.include_router(payment_router_neo.router)
+neo4j_app.include_router(auth_router_neo.router)
 
 app.mount('/api/v1/nosql', app=mongo_app, name='Mongo app')
 app.mount('/api/v1/sql', app=sql_app, name='SQL app')

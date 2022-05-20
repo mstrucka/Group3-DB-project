@@ -40,3 +40,8 @@ class UserInDB(User):
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+
+class NeoUser(BaseModel):
+    name: str
+    email: str
+    born: int

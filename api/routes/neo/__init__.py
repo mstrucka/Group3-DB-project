@@ -1,6 +1,6 @@
 from api.routes.neo import (
     resource_router_neo,
-    # auth_router_neo,
+    auth_router_neo,
     course_router_neo,
     lecture_router_neo,
     payment_router_neo,
