@@ -1,3 +1,4 @@
+from bson import json_util
 from py2neo import Node, Relationship
 import json
 from db.neo4jdb.payment import PaymentCreateSchema
@@ -5,8 +6,12 @@ from db.neo4jdb.neo import graph
 
 # TODO: return
 def get_all_payments():
-    result = graph.nodes.match("Payment").all()
-    return json.dumps([{"payment": dict(row["payment"])} for row in result])
+    result = graph.nodes.match("Payment")
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=str)
+        to_return.append(json_doc)
+    return to_return
 
 # TODO: return
 def get_by_id(id):

@@ -1,3 +1,4 @@
+from bson import json_util
 from py2neo import Graph, Node, Relationship
 import json
 from db.neo4jdb.resource import ResourceCreateSchema, ResourceUpdateSchema
@@ -5,10 +6,12 @@ from db.neo4jdb.neo import graph
 
 # TODO: return
 def get_all_resources():
-    result = graph.nodes.match("Resource").all()
-    for res in result:
-        print(res)
-    return json.dumps([{"resource": dict(row["resource"])} for row in result])
+    result = graph.nodes.match("Resource")
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
 
 # TODO: return
 def get_by_name(name):

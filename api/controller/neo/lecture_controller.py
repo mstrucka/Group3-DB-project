@@ -1,3 +1,4 @@
+from bson import json_util
 from py2neo import Node, Relationship
 import json
 from db.neo4jdb.neo import graph
@@ -5,8 +6,12 @@ from db.neo4jdb.lecture import LectureCreateSchema, LectureUpdateSchema
 
 # TODO: return
 def get_all_lectures():
-    result = graph.nodes.match("Lecture").all()
-    return json.dumps([{"lecture": dict(row["lecture"])} for row in result])
+    result = graph.nodes.match("Lecture")
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
 
 
 # TODO: return
