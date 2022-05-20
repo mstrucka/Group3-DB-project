@@ -18,6 +18,12 @@ def get_by_name(name):
     return json.dumps([{"teacher": dict(row["teacher"])} for row in result])
 
 
+# TODO: return
+def get_by_email(email):
+    result = graph.nodes.match("Teacher", email=email)
+    return result
+
+
 # TODO: check functionality
 def get_by_course_name(name):
     graph.nodes.match(name=name).first()
@@ -32,19 +38,17 @@ def delete_by_name(name):
 
 # TODO: return
 def edit_teacher(name, editTeacher: UserUpdateSchema):
-    email = editTeacher.email
     born = editTeacher.born
-    password_hash = editTeacher.password_hash
     result = graph.run(
         "MATCH (t:Teacher) {name: $name} "
-        "SET t.email: $email, t.born: $born, t.password_hash: $password_hash"
+        "SET t.born: $born"
     )
 
 
-# TODO: check functionality
+# TODO: check functionality, hash PW
 def create_teacher(createTeacherObject: UserCreateSchema):
-    teacherNode = Node("Teacher", name=createTeacherObject.name,email=createTeacherObject.email,
-                       born=createTeacherObject.born, password_hash= createTeacherObject.password_hash)
+    teacherNode = Node("Teacher", name=createTeacherObject.name, email=createTeacherObject.email,
+                       born=createTeacherObject.born, password_hash= createTeacherObject.password)
     tx = graph.begin()
     tx.create(teacherNode)
     if (createTeacherObject.courseName != None):

@@ -12,7 +12,8 @@ def get_all_courses():
 # TODO: return
 def get_by_name(name):
     result = graph.nodes.match("Course", name=name)
-    return json.dumps({"Course": result})
+    print(result)
+    return json.dumps({"Course": result.__dict__})
 
 
 # TODO: functionality

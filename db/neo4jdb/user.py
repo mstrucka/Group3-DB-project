@@ -5,11 +5,10 @@ class UserCreateSchema(BaseModel):
     name: str
     email: str
     born: int
-    password_hash: str
+    password: str
+    isStudent: bool
     courseName: str | None
 
 
 class UserUpdateSchema(BaseModel):
-    email: str
-    born: int
-    password_hash: str
+    born: int | None
