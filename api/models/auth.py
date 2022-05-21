@@ -44,4 +44,4 @@ class UserInDB(User):
 class NeoUser(BaseModel):
     name: str
     email: str
-    born: int
+    password_hash: str

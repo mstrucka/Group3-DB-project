@@ -4,6 +4,8 @@ from bson import json_util
 from py2neo import Node, Relationship
 import json
 import http.client
+
+from api.models.auth import NeoUser
 from db.neo4jdb.user import UserCreateSchema, UserUpdateSchema
 from db.neo4jdb.neo import graph
 from passlib.context import CryptContext
@@ -41,7 +43,7 @@ def delete_by_name(name):
     tx.commit()
 
 
-# TODO: return check
+# TODO: relship invisible
 def edit_student(sname, editStudent: UserUpdateSchema):
     if editStudent.born is not None:
         born = editStudent.born
@@ -49,17 +51,23 @@ def edit_student(sname, editStudent: UserUpdateSchema):
             f'MATCH (s:Student {{name: "{sname}"}}) SET s.born= {born}'
         )
         return result.stats()
+    elif editStudent.courseName is not None:
+        courseNode = graph.nodes.match("Course", title=editStudent.courseName).first()
+        studentNode = graph.nodes.match("Student", name=sname).first()
+        studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
+        graph.create(studentRelship)
     else:
         return http.client.responses[http.client.BAD_REQUEST]
 
 
-# TODO: relationship, hash PW
+# TODO: works, return only
 def create_student(createStudentObject: UserCreateSchema):
     studentNode = Node("Student", name=createStudentObject.name, email=createStudentObject.email,
                        born=createStudentObject.born, password_hash=get_password_hash(createStudentObject.password))
     tx = graph.begin()
     tx.create(studentNode)
-    if (createStudentObject.courseName != None):
-        studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", createStudentObject.courseName)
+    if (createStudentObject.courseName is not None):
+        courseNode = graph.nodes.match("Course", title=createStudentObject.courseName).first()
+        studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
         tx.create(studentRelship)
     tx.commit()

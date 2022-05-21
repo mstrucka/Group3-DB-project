@@ -12,3 +12,4 @@ class UserCreateSchema(BaseModel):
 
 class UserUpdateSchema(BaseModel):
     born: int | None
+    courseName: str | None

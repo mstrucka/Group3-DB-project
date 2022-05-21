@@ -41,13 +41,14 @@ def edit_resource(name, editResource: ResourceUpdateSchema):
     else:
         return http.client.responses[http.client.BAD_REQUEST]
 
-# TODO: works without lecture name, try with lecture name later
+# TODO: works, return only
 def create_resource(createResourceObject: ResourceCreateSchema):
     resourceNode = Node("Resource", id=createResourceObject.id,
                         name=createResourceObject.name, uri=createResourceObject.uri)
     tx = graph.begin()
     tx.create(resourceNode)
     if createResourceObject.lectureName is not None:
-        resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", createResourceObject.lectureName)
+        lectureNode = graph.nodes.match("Lecture", title=createResourceObject.lectureName).first()
+        resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", lectureNode)
         tx.create(resourceRelship)
     tx.commit()

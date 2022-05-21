@@ -58,13 +58,14 @@ def edit_teacher(tname, editTeacher: UserUpdateSchema):
         return http.client.responses[http.client.BAD_REQUEST]
 
 
-# TODO: relationship, hash PW
+# TODO: works, return only
 def create_teacher(createTeacherObject: UserCreateSchema):
     teacherNode = Node("Teacher", name=createTeacherObject.name, email=createTeacherObject.email,
                        born=createTeacherObject.born, password_hash= get_password_hash(createTeacherObject.password))
     tx = graph.begin()
     tx.create(teacherNode)
-    if (createTeacherObject.courseName != None):
-        teacherRelship = Relationship(teacherNode, "TEACHES", createTeacherObject.courseName)
+    if (createTeacherObject.courseName is not None):
+        courseNode = graph.nodes.match("Course", title=createTeacherObject.courseName).first()
+        teacherRelship = Relationship(courseNode, "TAUGHT_BY", teacherNode)
         tx.create(teacherRelship)
     tx.commit()
