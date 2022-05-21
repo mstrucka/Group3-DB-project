@@ -56,7 +56,7 @@ def edit_course(title, editCourse: CourseUpdateSchema):
 
 # TODO: works, return only
 def create_course(course: CourseCreateSchema):
-    courseNode = Node("Course", id=course.id, title=course.title,
+    courseNode = Node("Course", title=course.title,
                       description=course.description, level=course.level, onSale=course.onSale,
                       isCourseOfTheDay=course.isCourseOfTheDay)
     tx = graph.begin()

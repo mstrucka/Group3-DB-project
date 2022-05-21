@@ -2,7 +2,6 @@ from pydantic import BaseModel
 
 
 class CourseCreateSchema(BaseModel):
-    id: int | None
     title: str
     description: str
     level: int
