@@ -2,12 +2,13 @@ from bson import json_util
 from py2neo import Node, Relationship
 import json
 import http.client
-from db.neo4jdb.user import UserCreateSchema, UserUpdateSchema
+from db.neo4jdb.user import UserCreate, UserUpdate
 from db.neo4jdb.neo import graph
 from passlib.context import CryptContext
 
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 def get_password_hash(password):
     return pwd_context.hash(password)
 
@@ -31,41 +32,42 @@ def get_by_email(email):
     return json.dumps(result, default=json_util.default)
 
 
-# TODO: check functionality
+# TODO: still does not work
 def get_by_course_name(name):
     graph.nodes.match(name=name).first()
     result = graph.match(nodes=[name], r_type="TAUGHT_BY").all()
     return json.dumps({"teacher": result})
 
 
-# TODO: return
 def delete_by_name(name):
     tx = graph.begin()
     nodeToDelete = graph.nodes.match("Teacher", name=name).first()
     tx.delete(nodeToDelete)
-    tx.commit()
+    result = tx.commit()
+    if result is None:
+        return True
 
 
-# TODO: return check
-def edit_teacher(tname, editTeacher: UserUpdateSchema):
-    if editTeacher.born is not None:
-        born = editTeacher.born
+def edit_teacher(name, teacher: UserUpdate):
+    if teacher.born is not None:
+        born = teacher.born
         result = graph.run(
-            f'MATCH (t:Teacher {{name: "{tname}"}}) SET t.born= {born}'
+            f'MATCH (t:Teacher {{name: "{name}"}}) SET t.born= {born}'
         )
         return result.stats()
     else:
         return http.client.responses[http.client.BAD_REQUEST]
 
 
-# TODO: works, return only
-def create_teacher(createTeacherObject: UserCreateSchema):
-    teacherNode = Node("Teacher", name=createTeacherObject.name, email=createTeacherObject.email,
-                       born=createTeacherObject.born, password_hash= get_password_hash(createTeacherObject.password))
+def create_teacher(teacher: UserCreate):
+    teacherNode = Node("Teacher", name=teacher.name, email=teacher.email,
+                       born=teacher.born, password_hash= get_password_hash(teacher.password))
     tx = graph.begin()
     tx.create(teacherNode)
-    if (createTeacherObject.courseName is not None):
-        courseNode = graph.nodes.match("Course", title=createTeacherObject.courseName).first()
+    if teacher.courseName is not None:
+        courseNode = graph.nodes.match("Course", title=teacher.courseName).first()
         teacherRelship = Relationship(courseNode, "TAUGHT_BY", teacherNode)
         tx.create(teacherRelship)
-    tx.commit()
+    result = tx.commit()
+    if result is None:
+        return True

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class UserCreateSchema(BaseModel):
+class UserCreate(BaseModel):
     name: str
     email: str
     born: int
@@ -10,6 +10,6 @@ class UserCreateSchema(BaseModel):
     courseName: str | None
 
 
-class UserUpdateSchema(BaseModel):
+class UserUpdate(BaseModel):
     born: int | None
     courseName: str | None

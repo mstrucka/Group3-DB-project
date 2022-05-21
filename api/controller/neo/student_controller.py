@@ -1,17 +1,15 @@
 import http
-
 from bson import json_util
 from py2neo import Node, Relationship
 import json
 import http.client
-
-from api.models.auth import NeoUser
-from db.neo4jdb.user import UserCreateSchema, UserUpdateSchema
+from db.neo4jdb.user import UserCreate, UserUpdate
 from db.neo4jdb.neo import graph
 from passlib.context import CryptContext
 
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
 def get_password_hash(password):
     return pwd_context.hash(password)
 
@@ -35,39 +33,41 @@ def get_by_email(email):
     return json.dumps(result, default=json_util.default)
 
 
-# TODO: return
 def delete_by_name(name):
     tx = graph.begin()
     nodeToDelete = graph.nodes.match("Student", name=name).first()
     tx.delete(nodeToDelete)
-    tx.commit()
+    result = tx.commit()
+    if result is None:
+        return True
 
 
 # TODO: relship invisible
-def edit_student(sname, editStudent: UserUpdateSchema):
-    if editStudent.born is not None:
-        born = editStudent.born
+def edit_student(name, student: UserUpdate):
+    if student.born is not None:
+        born = student.born
         result = graph.run(
-            f'MATCH (s:Student {{name: "{sname}"}}) SET s.born= {born}'
+            f'MATCH (s:Student {{name: "{name}"}}) SET s.born= {born}'
         )
         return result.stats()
-    elif editStudent.courseName is not None:
-        courseNode = graph.nodes.match("Course", title=editStudent.courseName).first()
-        studentNode = graph.nodes.match("Student", name=sname).first()
+    elif student.courseName is not None:
+        courseNode = graph.nodes.match("Course", title=student.courseName).first()
+        studentNode = graph.nodes.match("Student", name=name).first()
         studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
         graph.create(studentRelship)
     else:
         return http.client.responses[http.client.BAD_REQUEST]
 
 
-# TODO: works, return only
-def create_student(createStudentObject: UserCreateSchema):
-    studentNode = Node("Student", name=createStudentObject.name, email=createStudentObject.email,
-                       born=createStudentObject.born, password_hash=get_password_hash(createStudentObject.password))
+def create_student(student: UserCreate):
+    studentNode = Node("Student", name=student.name, email=student.email,
+                       born=student.born, password_hash=get_password_hash(student.password))
     tx = graph.begin()
     tx.create(studentNode)
-    if (createStudentObject.courseName is not None):
-        courseNode = graph.nodes.match("Course", title=createStudentObject.courseName).first()
+    if student.courseName is not None:
+        courseNode = graph.nodes.match("Course", title=student.courseName).first()
         studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
         tx.create(studentRelship)
-    tx.commit()
+    result = tx.commit()
+    if result is None:
+        return True
