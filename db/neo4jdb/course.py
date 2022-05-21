@@ -14,7 +14,6 @@ class CourseCreateSchema(BaseModel):
 
 
 class CourseUpdateSchema(BaseModel):
-    id: int | None
     description: str
     level: int
     price: float

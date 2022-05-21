@@ -32,16 +32,14 @@ def delete_by_title(title):
     tx.commit()
 
 
-# TODO: functionality
+# TODO: relationships, return
 def edit_lecture(title, editLecture: LectureUpdateSchema):
-    title = editLecture.title
     description = editLecture.description
     index = editLecture.index
     lectureNode = graph.nodes.match("Lecture", title=title)
     tx = graph.begin()
     tx.run(
-        "MATCH (l:Lecture) {name: $name} "
-        "SET l.title: $title, l.description: $description, l.index: $index"
+        f'MATCH (l:Lecture {{title: "{title}"}}) SET l.description= "{description}", l.index= {index}'
     )
     if(editLecture.courseName != None):
         lectureCourseRelShip = Relationship(lectureNode, "IS_PART_OF_COURSE", editLecture.courseName)
@@ -54,7 +52,7 @@ def edit_lecture(title, editLecture: LectureUpdateSchema):
 
 # TODO: relationships
 def create_lecture(createLectureObject: LectureCreateSchema):
-    lectureNode = Node("Lecture", id=createLectureObject.id, title=createLectureObject.title,
+    lectureNode = Node("Lecture", title=createLectureObject.title,
                        description=createLectureObject.description, index=createLectureObject.index)
     tx = graph.begin()
     tx.create(lectureNode)

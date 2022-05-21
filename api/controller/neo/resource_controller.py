@@ -1,6 +1,7 @@
 from bson import json_util
 from py2neo import Node, Relationship
 import json
+import http.client
 from db.neo4jdb.resource import ResourceCreateSchema, ResourceUpdateSchema
 from db.neo4jdb.neo import graph
 
@@ -23,19 +24,22 @@ def delete_by_name(name):
     tx.delete(nodeToDelete)
     tx.commit()
 
-# TODO: functionality, is name different than title? also, can be simplified
+# TODO: relationship
 def edit_resource(name, editResource: ResourceUpdateSchema):
-    uri = editResource.uri
     tx = graph.begin()
-    graph().run(
-        "MATCH (r:Resource) {name: $name} "
-        "SET r.uri: $uri"
-    )
-    resourceNode = graph.nodes.match("Resource", name=name)
-    resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", editResource.lectureName)
-    tx.create(resourceRelship)
-    tx.commit()
-
+    if editResource.uri is not None:
+        uri = editResource.uri
+        result = tx.run(
+            f'MATCH (r:Resource {{name: "{name}"}}) SET r.uri= "{uri}"'
+        )
+        return result.stats()
+    elif editResource.lectureName is not None:
+        resourceNode = graph.nodes.match("Resource", name=name)
+        resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", editResource.lectureName)
+        tx.create(resourceRelship)
+        tx.commit()
+    else:
+        return http.client.responses[http.client.BAD_REQUEST]
 
 # TODO: works without lecture name, try with lecture name later
 def create_resource(createResourceObject: ResourceCreateSchema):

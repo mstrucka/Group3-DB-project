@@ -33,7 +33,7 @@ def delete_by_title(title):
     tx.commit()
 
 
-# TODO: functionality
+# TODO: relationships, return
 def edit_course(title, editCourse: CourseUpdateSchema):
     onSale = editCourse.onSale
     description = editCourse.description
@@ -43,9 +43,8 @@ def edit_course(title, editCourse: CourseUpdateSchema):
     courseNode = graph.nodes.match("Course", title=title)
     tx = graph.begin()
     tx.run(
-        "MATCH (c:Course) {name: $name} "
-        "SET c.level: $level, c.description: $description, c.onSale: $onSale, "
-        "c.price: $price, c.isCourseOfTheDay: $isCoD"
+        f'MATCH (c:Course {{title: "{title}"}}) SET c.description= "{description}", c.onSale= {onSale}, c.level= {level},'
+        f' c.price= {price}, c.isCourseOfTheDay= {isCoD} '
     )
     if (editCourse.lectureName != None):
         lectureCourseRelShip = Relationship(courseNode, "HAS_LECTURE", editCourse.lectureName)

@@ -3,6 +3,7 @@ from pprint import pprint
 from bson import json_util
 from py2neo import Node, Relationship
 import json
+import http.client
 from db.neo4jdb.user import UserCreateSchema, UserUpdateSchema
 from db.neo4jdb.neo import graph
 
@@ -41,13 +42,16 @@ def delete_by_name(name):
     tx.commit()
 
 
-# TODO: return
-def edit_teacher(name, editTeacher: UserUpdateSchema):
-    born = editTeacher.born
-    result = graph.run(
-        "MATCH (t:Teacher) {name: $name} "
-        "SET t.born: $born"
-    )
+# TODO: return check
+def edit_teacher(tname, editTeacher: UserUpdateSchema):
+    if editTeacher.born is not None:
+        born = editTeacher.born
+        result = graph.run(
+            f'MATCH (t:Teacher {{name: "{tname}"}}) SET t.born= {born}'
+        )
+        return result.stats()
+    else:
+        return http.client.responses[http.client.BAD_REQUEST]
 
 
 # TODO: relationship, hash PW
