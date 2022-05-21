@@ -1,11 +1,17 @@
 import http
 
 from bson import json_util
-from py2neo import Node, Relationship, NodeMatcher
+from py2neo import Node, Relationship
 import json
 import http.client
 from db.neo4jdb.user import UserCreateSchema, UserUpdateSchema
 from db.neo4jdb.neo import graph
+from passlib.context import CryptContext
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 
 def get_all_students():
@@ -50,7 +56,7 @@ def edit_student(sname, editStudent: UserUpdateSchema):
 # TODO: relationship, hash PW
 def create_student(createStudentObject: UserCreateSchema):
     studentNode = Node("Student", name=createStudentObject.name, email=createStudentObject.email,
-                       born=createStudentObject.born, password_hash=createStudentObject.password)
+                       born=createStudentObject.born, password_hash=get_password_hash(createStudentObject.password))
     tx = graph.begin()
     tx.create(studentNode)
     if (createStudentObject.courseName != None):

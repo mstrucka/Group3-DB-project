@@ -6,7 +6,7 @@ class UserCreateSchema(BaseModel):
     email: str
     born: int
     password: str
-    isStudent: bool
+    isStudent: bool | None
     courseName: str | None
 
 
