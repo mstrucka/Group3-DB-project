@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class PaymentCreateSchema(BaseModel):
+class PaymentCreate(BaseModel):
     id: str
     price: float
     courseName: str | None
