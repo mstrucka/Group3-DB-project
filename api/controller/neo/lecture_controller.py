@@ -50,16 +50,18 @@ def edit_lecture(title, editLecture: LectureUpdateSchema):
     tx.commit()
 
 
-# TODO: relationships
+# TODO: works, return only
 def create_lecture(createLectureObject: LectureCreateSchema):
     lectureNode = Node("Lecture", title=createLectureObject.title,
                        description=createLectureObject.description, index=createLectureObject.index)
     tx = graph.begin()
     tx.create(lectureNode)
     if (createLectureObject.courseName != None):
-        lectureCourseRelShip = Relationship(lectureNode, "IS_PART_OF_COURSE", createLectureObject.courseName)
+        courseNode = graph.nodes.match("Course", title=createLectureObject.courseName).first()
+        lectureCourseRelShip = Relationship(lectureNode, "IS_PART_OF_COURSE", courseNode)
         tx.create(lectureCourseRelShip)
     if (createLectureObject.resourceName != None):
-        lectureResourceRelShip = Relationship(lectureNode, "HAS_RESOURCE", createLectureObject.resourceName)
+        resourceNode = graph.nodes.match("Resource", name=createLectureObject.resourceName).first()
+        lectureResourceRelShip = Relationship(lectureNode, "HAS_RESOURCE", resourceNode)
         tx.create(lectureResourceRelShip)
     tx.commit()

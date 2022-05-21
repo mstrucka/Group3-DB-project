@@ -27,18 +27,21 @@ def delete_by_id(id):
     tx.commit()
 
 
-# TODO: works when no relatinships only, DATE!
+# TODO: works, return!
 def create_payment(createPaymentObject: PaymentCreateSchema):
     paymentNode = Node("Payment", id=createPaymentObject.id,
-                       date=datetime.MAXYEAR, price=createPaymentObject.price)
+                       date=datetime.date.today(), price=createPaymentObject.price)
     tx = graph.begin()
     tx.create(paymentNode)
-    if createPaymentObject.studentName is not None:
-        paymentRelship = Relationship(paymentNode, "MADE_BY", createPaymentObject.studentName)
-        tx.create(paymentRelship)
-    studentNode = graph.nodes.match("Student", name=createPaymentObject.studentName)
+    studentNode = graph.nodes.match("Student", name=createPaymentObject.studentName).first()
     if createPaymentObject.courseName is not None:
-        courseNode = graph.nodes.match("Course", title=createPaymentObject.courseName)
-        studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
-        tx.create(studentRelship)
+        enroll(studentNode, createPaymentObject.courseName)
+    if createPaymentObject.studentName is not None:
+        paymentRelship = Relationship(paymentNode, "MADE_BY", studentNode)
+        tx.create(paymentRelship)
     tx.commit()
+
+def enroll(studentNode, courseName):
+    courseNode = graph.nodes.match("Course", title=courseName).first()
+    studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
+    graph.create(studentRelship)

@@ -54,8 +54,7 @@ def edit_course(title, editCourse: CourseUpdateSchema):
         tx.create(CourseTeacherRelship)
     tx.commit()
 
-
-# TODO: relationships
+# TODO: works, return only
 def create_course(course: CourseCreateSchema):
     courseNode = Node("Course", id=course.id, title=course.title,
                       description=course.description, level=course.level, onSale=course.onSale,
@@ -63,9 +62,11 @@ def create_course(course: CourseCreateSchema):
     tx = graph.begin()
     tx.create(courseNode)
     if (course.lectureName != None):
-        lectureCourseRelShip = Relationship(courseNode, "HAS_LECTURE", course.lectureName)
+        lectureNode = graph.nodes.match("Lecture", title=course.lectureName).first()
+        lectureCourseRelShip = Relationship(courseNode, "HAS_LECTURE", lectureNode)
         tx.create(lectureCourseRelShip)
     if (course.teacherName != None):
-        CourseTeacherRelship = Relationship(courseNode, "IS_TAUGHT_BY", course.teacherName)
+        teacherNode = graph.nodes.match("Teacher", name=course.teacherName).first()
+        CourseTeacherRelship = Relationship(courseNode, "IS_TAUGHT_BY", teacherNode)
         tx.create(CourseTeacherRelship)
     tx.commit()
