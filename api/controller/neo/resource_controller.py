@@ -1,9 +1,9 @@
 from bson import json_util
 from py2neo import Node, Relationship
 import json
-import http.client
-from db.neo4jdb.resource import ResourceCreateSchema, ResourceUpdateSchema
+from db.neo4jdb.resource import ResourceCreate, ResourceUpdate
 from db.neo4jdb.neo import graph
+
 
 def get_all_resources():
     result = graph.nodes.match("Resource")
@@ -13,42 +13,47 @@ def get_all_resources():
         to_return.append(json_doc)
     return to_return
 
+
 def get_by_name(name):
     result = graph.nodes.match("Resource", name=name).first()
     return json.dumps(result, default=json_util.default)
 
-# TODO: return?
+
 def delete_by_name(name):
     tx = graph.begin()
     nodeToDelete = graph.nodes.match("Resource", name=name).first()
     tx.delete(nodeToDelete)
-    tx.commit()
+    result = tx.commit()
+    if result is None:
+        return True
 
-# TODO: relationship
-def edit_resource(name, editResource: ResourceUpdateSchema):
+
+# TODO: still does not work
+def edit_resource(name, resource: ResourceUpdate):
     tx = graph.begin()
-    if editResource.uri is not None:
-        uri = editResource.uri
+    if resource.uri is not None:
+        uri = resource.uri
         result = tx.run(
             f'MATCH (r:Resource {{name: "{name}"}}) SET r.uri= "{uri}"'
         )
         return result.stats()
-    elif editResource.lectureName is not None:
+    elif resource.lectureName is not None:
         resourceNode = graph.nodes.match("Resource", name=name)
-        resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", editResource.lectureName)
+        resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", resource.lectureName)
         tx.create(resourceRelship)
-        tx.commit()
-    else:
-        return http.client.responses[http.client.BAD_REQUEST]
+    result = tx.commit()
+    if result is None:
+        return True
 
-# TODO: works, return only
-def create_resource(createResourceObject: ResourceCreateSchema):
-    resourceNode = Node("Resource", id=createResourceObject.id,
-                        name=createResourceObject.name, uri=createResourceObject.uri)
+
+def create_resource(resource: ResourceCreate):
+    resourceNode = Node("Resource", id=resource.id, name=resource.name, uri=resource.uri)
     tx = graph.begin()
     tx.create(resourceNode)
-    if createResourceObject.lectureName is not None:
-        lectureNode = graph.nodes.match("Lecture", title=createResourceObject.lectureName).first()
+    if resource.lectureName is not None:
+        lectureNode = graph.nodes.match("Lecture", title=resource.lectureName).first()
         resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", lectureNode)
         tx.create(resourceRelship)
-    tx.commit()
+    result = tx.commit()
+    if result is None:
+        return True

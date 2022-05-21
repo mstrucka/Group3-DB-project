@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Path
 import api.controller.neo.payment_controller as payment_ctrl
-from db.neo4jdb.payment import PaymentCreateSchema
+from db.neo4jdb.payment import PaymentCreate
 
 router = APIRouter(
     prefix='/payments',
@@ -23,5 +23,5 @@ def delete_payment(id: str = Path(..., id='Payment id')):
     return payment_ctrl.delete_by_id(id)
 
 @router.post('/')
-def create_payment(payment: PaymentCreateSchema):
+def create_payment(payment: PaymentCreate):
     return payment_ctrl.create_payment(payment)

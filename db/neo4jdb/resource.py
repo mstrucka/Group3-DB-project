@@ -1,13 +1,13 @@
 from pydantic import BaseModel
 
 
-class ResourceCreateSchema(BaseModel):
+class ResourceCreate(BaseModel):
     id: str
     name: str
     uri: str
     lectureName: str | None
 
 
-class ResourceUpdateSchema(BaseModel):
+class ResourceUpdate(BaseModel):
     uri: str
     lectureName: str | None

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class LectureCreateSchema(BaseModel):
+class LectureCreate(BaseModel):
     title: str
     description: str
     index: int
@@ -9,7 +9,7 @@ class LectureCreateSchema(BaseModel):
     resourceName: str | None
 
 
-class LectureUpdateSchema(BaseModel):
+class LectureUpdate(BaseModel):
     description: str
     index: int
     courseName: str | None

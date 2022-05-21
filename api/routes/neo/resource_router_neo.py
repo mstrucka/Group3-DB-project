@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Path
 import api.controller.neo.resource_controller as resource_ctrl
-from db.neo4jdb.resource import ResourceCreateSchema, ResourceUpdateSchema
+from db.neo4jdb.resource import ResourceCreate, ResourceUpdate
 
 router = APIRouter(
     prefix='/resources',
     tags=['Resources']
 )
-# TODO: get resources for lecture? for course?
 
 
 @router.get('/')
@@ -25,10 +24,10 @@ def delete_resource(name: str = Path(..., name='Resource name')):
 
 
 @router.put('/{name}')
-def edit_resource(resource: ResourceUpdateSchema, name: str = Path(..., name='Resource name')):
+def edit_resource(resource: ResourceUpdate, name: str = Path(..., name='Resource name')):
     return resource_ctrl.edit_resource(name, resource)
 
 
 @router.post('/')
-def create_resource(resource: ResourceCreateSchema):
+def create_resource(resource: ResourceCreate):
     return resource_ctrl.create_resource(resource)

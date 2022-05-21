@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Path
 import api.controller.neo.lecture_controller as lecture_ctrl
-from db.neo4jdb.lecture import LectureCreateSchema, LectureUpdateSchema
+from db.neo4jdb.lecture import LectureCreate, LectureUpdate
 
 router = APIRouter(
     prefix='/lectures',
@@ -18,13 +18,13 @@ def get_lecture_by_title(title: str = Path(..., title='Lecture title')):
     return lecture_ctrl.get_by_title(title)
 
 
-@router.get('/course/{name}')
-def get_lecture_by_course_title(title: str = Path(..., name='Course title')):
+@router.get('/course/{title}')
+def get_lecture_by_course_title(title: str = Path(..., title='Course title')):
     return lecture_ctrl.get_by_course_title(title)
 
 
 @router.put('/{title}')
-def edit_lecture(lecture: LectureUpdateSchema, title: str = Path(..., title='Lecture title')):
+def edit_lecture(lecture: LectureUpdate, title: str = Path(..., title='Lecture title')):
     return lecture_ctrl.edit_lecture(title, lecture)
 
 
@@ -34,5 +34,5 @@ def delete_lecture(title: str = Path(..., title='Lecture title')):
 
 
 @router.post('/')
-def create_lecture(lecture: LectureCreateSchema):
+def create_lecture(lecture: LectureCreate):
     return lecture_ctrl.create_lecture(lecture)

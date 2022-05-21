@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from api.controller.neo import student_controller, teacher_controller
 
-from db.neo4jdb.user import UserCreateSchema
+from db.neo4jdb.user import UserCreate
 
 oauth2_scheme_sql = OAuth2PasswordBearer(tokenUrl='/api/v1/neo/auth/token')
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -47,7 +47,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 def get_user(email: str):
     user = student_controller.get_by_email(email)
-    if user == None:
+    if user is None:
         user = teacher_controller.get_by_email(email)
     return user
 
@@ -72,7 +72,7 @@ def get_current_user(token: str = Depends(oauth2_scheme_sql)):
     return user
 
 
-def register_user(user: UserCreateSchema):
+def register_user(user: UserCreate):
     user.password = get_password_hash(user.password)
     if user.isStudent:
         student_controller.create_student(user)

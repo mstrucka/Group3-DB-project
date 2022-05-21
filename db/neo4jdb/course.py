@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class CourseCreateSchema(BaseModel):
+class CourseCreate(BaseModel):
     title: str
     description: str
     level: int
@@ -12,7 +12,7 @@ class CourseCreateSchema(BaseModel):
     lectureName: str | None
 
 
-class CourseUpdateSchema(BaseModel):
+class CourseUpdate(BaseModel):
     description: str
     level: int
     price: float
