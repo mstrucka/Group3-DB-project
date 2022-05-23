@@ -1,5 +1,6 @@
 
 from pprint import pprint
+from api.routes.mongo.CourseAvgPrice import CourseAvgPrice
 from db.mongodb.db import course_collection, course_of_the_day_collection
 from db.mongodb.course import CourseSchema
 from bson.objectid import ObjectId
@@ -56,3 +57,18 @@ async def search_courses(query: str, limit: int) -> list:
     c = sorted(c, key=lambda x: x['score'], reverse=True)
     c = [ CourseSchema(**el) for el in c ]
     return c
+
+async def get_avg_price_by_lecturer():
+    pipeline = [
+        {
+            '$group': {
+                '_id': '$lecturer_id',
+                'avg_price': {
+                    '$avg': '$price'
+                }
+            }
+        }
+    ]
+    res = await course_collection.aggregate(pipeline).to_list(length=None)
+    res = [ CourseAvgPrice(**el) for el in res ]
+    return res

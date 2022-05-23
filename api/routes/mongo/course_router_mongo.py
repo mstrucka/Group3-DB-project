@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Path, Query, Body
+from fastapi import APIRouter, Path, Query
 import api.controller.mongo.course_controller as course_ctrl
-from db.sql.course import CourseCreate, CourseEdit
-from db.DbTypes import DbTypes
 from db.mongodb.course import CourseSchema, CourseEditSchema
 
 router = APIRouter(
@@ -17,6 +15,11 @@ async def get_all_courses():
 @router.get('/today')
 async def get_course_of_the_day():
     res = await course_ctrl.get_course_of_the_day()
+    return res
+
+@router.get('/avg-price-by-lecturer')
+async def get_avg_price_by_lecturer():
+    res = await course_ctrl.get_avg_price_by_lecturer()
     return res
 
 @router.get('/search')
