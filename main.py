@@ -31,6 +31,8 @@ sql_app.include_router(payment_router.router)
 
 mongo_app.include_router(course_router_mongo.router)
 mongo_app.include_router(user_router_mongo.router)
+mongo_app.include_router(student_router_mongo.router)
+mongo_app.include_router(lecturer_router_mongo.router)
 mongo_app.include_router(auth_router_mongo.router)
 mongo_app.include_router(payment_router_mongo.router)
 

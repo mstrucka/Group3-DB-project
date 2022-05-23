@@ -4,4 +4,6 @@ from . import(
     user_router_mongo,
     course_router_mongo,
     payment_router_mongo,
+    student_router_mongo,
+    lecturer_router_mongo
 )

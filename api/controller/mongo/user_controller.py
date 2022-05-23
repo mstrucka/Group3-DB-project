@@ -1,15 +1,51 @@
 from bson.objectid import ObjectId
-from db.mongodb.db import user_collection
+from db.mongodb.db import user_collection, students_view, lecturers_view
 from api.models.auth import UserInDB, User
 
 async def get_all_users():
     users = []
     async for user in user_collection.find():
-        print(UserInDB(**user))
         x = UserInDB(**user)
         users.append(x)
-        #users.append(UserInDB(**user))
     return users
+
+async def get_all_students():
+    students = await students_view.find().to_list(length=None)
+    students = [ UserInDB(**el) for el in students ]
+    return students
+
+async def get_all_lecturers():
+    lecturers = await lecturers_view.find().to_list(length=None)
+    lecturers = [ UserInDB(**el) for el in lecturers ]
+    return lecturers
+
+async def get_user_age(id):
+    pipeline = [ 
+        {
+            '$match': {'_id': ObjectId(id)}
+        }, 
+        {
+            '$project': {
+                'dob': {
+                    '$toDate': '$dob'
+                }
+            }
+        },
+        {
+            '$addFields': {
+                'age': { 
+                    '$dateDiff': { 
+                        'startDate': '$dob', 'endDate': '$$NOW', 'unit': 'year' 
+                    } 
+                } 
+            } 
+        },
+        {
+            '$project': {'age': 1, '_id': 0}
+        }
+    ]
+    age = await user_collection.aggregate(pipeline).to_list(length=None)
+    return age
 
 async def get_user_by_id(id: str) -> dict:
     user = await user_collection.find_one({'_id': ObjectId(id)})
