@@ -1,5 +1,5 @@
 from datetime import datetime
-from db.mongodb.db import course_collection, payment_collection, enrollment_collection
+from db.mongodb.db import course_collection, payment_collection, enrollment_collection, client
 from bson.objectid import ObjectId
 from db.mongodb.payment import PaymentSchema
 
@@ -12,36 +12,38 @@ async def create_payment(user_id, data):
     course_ids = data['course_ids']
     course_ids = [ ObjectId(id) for id in course_ids ]
     
-    async for enrollment in enrollment_collection.find({ 'student_id': ObjectId(user_id), 'course_id': { '$in': course_ids } }):
-        course_id = enrollment['course_id']
-        course = await course_collection.find_one({'_id': ObjectId(course_id)})
-        title = course['title']
-        return {'error': f'already enrolled in course "{title}"'}
+    async with await client.start_session() as s:
+        async with s.start_transaction():
+            async for enrollment in enrollment_collection.find({ 'student_id': ObjectId(user_id), 'course_id': { '$in': course_ids } }, session=s):
+                course_id = enrollment['course_id']
+                course = await course_collection.find_one({'_id': ObjectId(course_id)}, session=s)
+                title = course['title']
+                return {'error': f'already enrolled in course "{title}"'}
 
-    
-    total_price = 0.0
-    async for course in course_collection.find({'_id': { '$in': course_ids }}):
-        total_price += course['price']
+            
+            total_price = 0.0
+            async for course in course_collection.find({'_id': { '$in': course_ids }},session=s):
+                total_price += course['price']
 
-    data['total'] = total_price
-    data['date'] = datetime.now().isoformat()
-    data['is_refund'] = False
-    del data['course_ids']
-    
-    payment = await payment_collection.insert_one(data)
-    new_payment = await payment_collection.find_one({'_id': payment.inserted_id})
+            data['total'] = total_price
+            data['date'] = datetime.now().isoformat()
+            data['is_refund'] = False
+            del data['course_ids']
+            
+            payment = await payment_collection.insert_one(data, session=s)
+            new_payment = await payment_collection.find_one({'_id': payment.inserted_id}, session=s)
 
-    # now inserting enrollments
-    enrollments = []
-    for id in course_ids:
-        enrollment = {
-            'student_id': user_id,
-            'course_id': id,
-            'payment_id': payment.inserted_id,
-            'finished': False
-        }
-        enrollments.append(enrollment)
+            # now inserting enrollments
+            enrollments = []
+            for id in course_ids:
+                enrollment = {
+                    'student_id': user_id,
+                    'course_id': id,
+                    'payment_id': payment.inserted_id,
+                    'finished': False
+                }
+                enrollments.append(enrollment)
 
-    await enrollment_collection.insert_many(enrollments)
+            await enrollment_collection.insert_many(enrollments, session=s)
 
     return PaymentSchema(**new_payment)
