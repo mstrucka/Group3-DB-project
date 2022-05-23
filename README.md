@@ -20,5 +20,16 @@ Run the following command: uvicorn main:app --reload
 
 Default port is 8000
 
-Swagger interactive docs are auto-generated. Go to /docs to access it.
-The API is a mounted app which lives on /api/v1. To access its docs go to /api/v1/dpcs
+## API's
+
+Application consists of 3 API's, one for each DB paradigm.
+They each live as a separate app mounted on the main app.
+
+Root paths
+- MySQL: /api/v1/mysql
+- MongoDB: /api/v1/mongo
+- Neo4j: /api/v1/neo4j
+
+### Docs
+
+Swagger/OpenAPI interactive docs are auto-generated. Go to /docs to access it.
