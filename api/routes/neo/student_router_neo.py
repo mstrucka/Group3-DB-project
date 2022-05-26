@@ -18,6 +18,16 @@ def get_student_by_name(name: str = Path(..., name='Student name')):
     return student_ctrl.get_by_name(name)
 
 
+@router.get('/enrollemnts/full/{name}')
+def get_student_enrollments_full(name: str = Path(..., name='Student name')):
+    return student_ctrl.get_enrollments_full(name)
+
+
+@router.get('/enrollemnts/names/{name}')
+def get_student_enrollments_full(name: str = Path(..., name='Student name')):
+    return student_ctrl.get_enrollments_names(name)
+
+
 @router.delete('/{name}')
 def delete_student(name: str = Path(..., name='Student name')):
     return student_ctrl.delete_by_name(name)

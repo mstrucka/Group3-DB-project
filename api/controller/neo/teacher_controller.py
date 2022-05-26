@@ -31,12 +31,32 @@ def get_by_email(email):
     result = graph.nodes.match("Teacher", email=email).first()
     return json.dumps(result, default=json_util.default)
 
+# TODO return
+def get_password_hash_by_email(email):
+    result = graph.run(f'MATCH (t:Teacher {{email: "{email}"}}) return t.password_hash')
+    print(result)
+    print(str(result))
+    return str(result)
 
-# TODO: still does not work
+
 def get_by_course_name(name):
-    graph.nodes.match(name=name).first()
-    result = graph.match(nodes=[name], r_type="TAUGHT_BY").all()
-    return json.dumps({"teacher": result})
+    query = f'MATCH (c:Course {{name: "{name}"}})-[:TAUGHT_BY]->(teacher) return teacher.name'
+    result = graph.run(query)
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
+
+
+def get_courses_taught_by_teacher(name):
+    query = f'MATCH (c:Course)-[:TAUGHT_BY]->(t:Teacher {{name: "{name}"}}) return c.name'
+    result = graph.run(query)
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
 
 
 def delete_by_name(name):
@@ -65,7 +85,7 @@ def create_teacher(teacher: UserCreate):
     tx = graph.begin()
     tx.create(teacherNode)
     if teacher.courseName is not None:
-        courseNode = graph.nodes.match("Course", title=teacher.courseName).first()
+        courseNode = graph.nodes.match("Course", name=teacher.courseName).first()
         teacherRelship = Relationship(courseNode, "TAUGHT_BY", teacherNode)
         tx.create(teacherRelship)
     result = tx.commit()

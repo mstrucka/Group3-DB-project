@@ -47,11 +47,11 @@ def edit_resource(name, resource: ResourceUpdate):
 
 
 def create_resource(resource: ResourceCreate):
-    resourceNode = Node("Resource", id=resource.id, name=resource.name, uri=resource.uri)
+    resourceNode = Node("Resource", name=resource.name, uri=resource.uri)
     tx = graph.begin()
     tx.create(resourceNode)
     if resource.lectureName is not None:
-        lectureNode = graph.nodes.match("Lecture", title=resource.lectureName).first()
+        lectureNode = graph.nodes.match("Lecture", name=resource.lectureName).first()
         resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", lectureNode)
         tx.create(resourceRelship)
     result = tx.commit()

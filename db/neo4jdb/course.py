@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class CourseCreate(BaseModel):
-    title: str
+    name: str
     description: str
     level: int
     price: float

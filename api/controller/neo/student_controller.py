@@ -32,6 +32,32 @@ def get_by_email(email):
     result = graph.nodes.match("Student", email=email).first()
     return json.dumps(result, default=json_util.default)
 
+#TODO
+def get_password_hash_by_email(email):
+    result = graph.run(f'MATCH (s:Student {{email: "{email}"}}) return s.password_hash')
+    print(json.dumps(result, default=json_util.default))
+    # print(result.keys())
+    return result["s.password_hash"]
+
+
+def get_enrollments_full(name):
+    query= f'MATCH (s:Student {{name: "{name}"}})-[:IS_ENROLLED_IN_COURSE]->(course) return course'
+    result = graph.run(query)
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
+
+def get_enrollments_names(name):
+    query= f'MATCH (s:Student {{name: "{name}"}})-[:IS_ENROLLED_IN_COURSE]->(course) return course.name'
+    result = graph.run(query)
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
+
 
 def delete_by_name(name):
     tx = graph.begin()
@@ -42,7 +68,7 @@ def delete_by_name(name):
         return True
 
 
-# TODO: relship invisible
+# TODO: relship invisible if relship with the same name already exists
 def edit_student(name, student: UserUpdate):
     if student.born is not None:
         born = student.born
@@ -51,10 +77,7 @@ def edit_student(name, student: UserUpdate):
         )
         return result.stats()
     elif student.courseName is not None:
-        courseNode = graph.nodes.match("Course", title=student.courseName).first()
-        studentNode = graph.nodes.match("Student", name=name).first()
-        studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
-        graph.create(studentRelship)
+        graph.run(f'MATCH (s:Student {{name: "{name}"}}), (c:Course {{name: "{student.courseName}"}}) CREATE (s)-[r:IS_ENROLLED_IN_COURSE]->(c)')
     else:
         return http.client.responses[http.client.BAD_REQUEST]
 
@@ -65,7 +88,7 @@ def create_student(student: UserCreate):
     tx = graph.begin()
     tx.create(studentNode)
     if student.courseName is not None:
-        courseNode = graph.nodes.match("Course", title=student.courseName).first()
+        courseNode = graph.nodes.match("Course", name=student.courseName).first()
         studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
         tx.create(studentRelship)
     result = tx.commit()

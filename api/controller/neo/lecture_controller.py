@@ -14,21 +14,14 @@ def get_all_lectures():
     return to_return
 
 
-def get_by_title(title):
-    result = graph.nodes.match("Lecture", title=title).first()
+def get_by_name(name):
+    result = graph.nodes.match("Lecture", name=name).first()
     return json.dumps(result, default=json_util.default)
 
 
-# TODO: still does not work
-def get_by_course_title(title):
-    graph.nodes.match(title=title).first()
-    result = graph.match(nodes=[title], r_type="IS_PART_OF_COURSE").all()
-    return json.dumps([{"lecture": dict(row["lecture"])} for row in result])
-
-
-def delete_by_title(title):
+def delete_by_name(name):
     tx = graph.begin()
-    nodeToDelete = graph.nodes.match("Lecture", title=title).first()
+    nodeToDelete = graph.nodes.match("Lecture", name=name).first()
     tx.delete(nodeToDelete)
     result = tx.commit()
     if result is None:
@@ -36,13 +29,13 @@ def delete_by_title(title):
 
 
 # TODO: still does not work
-def edit_lecture(title, lecture: LectureUpdate):
+def edit_lecture(name, lecture: LectureUpdate):
     description = lecture.description
     index = lecture.index
-    lectureNode = graph.nodes.match("Lecture", title=title)
+    lectureNode = graph.nodes.match("Lecture", name=name)
     tx = graph.begin()
     tx.run(
-        f'MATCH (l:Lecture {{title: "{title}"}}) SET l.description= "{description}", l.index= {index}'
+        f'MATCH (l:Lecture {{name: "{name}"}}) SET l.description= "{description}", l.index= {index}'
     )
     if lecture.courseName is not None:
         lectureCourseRelShip = Relationship(lectureNode, "IS_PART_OF_COURSE", lecture.courseName)
@@ -56,12 +49,12 @@ def edit_lecture(title, lecture: LectureUpdate):
 
 
 def create_lecture(lecture: LectureCreate):
-    lectureNode = Node("Lecture", title=lecture.title,
+    lectureNode = Node("Lecture", name=lecture.name,
                        description=lecture.description, index=lecture.index)
     tx = graph.begin()
     tx.create(lectureNode)
     if lecture.courseName is not None:
-        courseNode = graph.nodes.match("Course", title=lecture.courseName).first()
+        courseNode = graph.nodes.match("Course", name=lecture.courseName).first()
         lectureCourseRelShip = Relationship(lectureNode, "IS_PART_OF_COURSE", courseNode)
         tx.create(lectureCourseRelShip)
     if lecture.resourceName is not None:

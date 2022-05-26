@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class LectureCreate(BaseModel):
-    title: str
+    name: str
     description: str
     index: int
     courseName: str | None

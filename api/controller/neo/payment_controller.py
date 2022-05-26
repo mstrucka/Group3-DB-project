@@ -45,6 +45,6 @@ def create_payment(payment: PaymentCreate):
 
 
 def enroll(studentNode, courseName):
-    courseNode = graph.nodes.match("Course", title=courseName).first()
+    courseNode = graph.nodes.match("Course", name=courseName).first()
     studentRelship = Relationship(studentNode, "IS_ENROLLED_IN_COURSE", courseNode)
     graph.create(studentRelship)

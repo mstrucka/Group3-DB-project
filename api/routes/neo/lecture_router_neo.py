@@ -13,24 +13,19 @@ def get_all_lectures():
     return lecture_ctrl.get_all_lectures()
 
 
-@router.get('/{title}')
-def get_lecture_by_title(title: str = Path(..., title='Lecture title')):
-    return lecture_ctrl.get_by_title(title)
+@router.get('/{name}')
+def get_lecture_by_name(name: str = Path(..., name='Lecture name')):
+    return lecture_ctrl.get_by_name(name)
 
 
-@router.get('/course/{title}')
-def get_lecture_by_course_title(title: str = Path(..., title='Course title')):
-    return lecture_ctrl.get_by_course_title(title)
+@router.put('/{name}')
+def edit_lecture(lecture: LectureUpdate, name: str = Path(..., name='Lecture name')):
+    return lecture_ctrl.edit_lecture(name, lecture)
 
 
-@router.put('/{title}')
-def edit_lecture(lecture: LectureUpdate, title: str = Path(..., title='Lecture title')):
-    return lecture_ctrl.edit_lecture(title, lecture)
-
-
-@router.delete('/{title}')
-def delete_lecture(title: str = Path(..., title='Lecture title')):
-    return lecture_ctrl.delete_by_title(title)
+@router.delete('/{name}')
+def delete_lecture(name: str = Path(..., name='Lecture name')):
+    return lecture_ctrl.delete_by_name(name)
 
 
 @router.post('/')
