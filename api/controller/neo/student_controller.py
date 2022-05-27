@@ -49,6 +49,7 @@ def get_enrollments_full(name):
         to_return.append(json_doc)
     return to_return
 
+
 def get_enrollments_names(name):
     query= f'MATCH (s:Student {{name: "{name}"}})-[:IS_ENROLLED_IN_COURSE]->(course) return course.name'
     result = graph.run(query)
@@ -68,7 +69,11 @@ def delete_by_name(name):
         return True
 
 
-# TODO: relship invisible if relship with the same name already exists
+def delete_by_enrollment_by_course_name(studentName, courseName):
+    result = graph.run(f'MATCH (s:Student {{name: "{studentName}"}})-[r:IS_ENROLLED_IN_COURSE]->(c: Course {{name: "{courseName}"}}) delete r')
+    return result.stats()
+
+
 def edit_student(name, student: UserUpdate):
     if student.born is not None:
         born = student.born

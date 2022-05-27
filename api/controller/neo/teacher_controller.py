@@ -75,6 +75,8 @@ def edit_teacher(name, teacher: UserUpdate):
             f'MATCH (t:Teacher {{name: "{name}"}}) SET t.born= {born}'
         )
         return result.stats()
+    elif teacher.courseName is not None:
+        graph.run(f'MATCH (t:Teacher {{name: "{name}"}}), (c:Course {{name: "{teacher.courseName}"}}) CREATE (c)-[r:TAUGHT_BY]->(t)')
     else:
         return http.client.responses[http.client.BAD_REQUEST]
 

@@ -1,4 +1,6 @@
 import datetime
+import random
+
 from py2neo import Node, Relationship
 import json
 from db.neo4jdb.payment import PaymentCreate
@@ -29,7 +31,8 @@ def delete_by_id(id):
 
 
 def create_payment(payment: PaymentCreate):
-    paymentNode = Node("Payment", id=payment.id,
+    paymentId = random.randint(1, 10000000)
+    paymentNode = Node("Payment", id=paymentId,
                        date=datetime.date.today(), price=payment.price)
     tx = graph.begin()
     tx.create(paymentNode)
