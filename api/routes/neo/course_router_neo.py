@@ -12,15 +12,14 @@ router = APIRouter(
 def get_all_courses():
     return course_ctrl.get_all_courses()
 
+@router.get('/students/{name}')
+def get_all_enrolled_students(name: str = Path(..., name='Course name')):
+    return course_ctrl.get_all_enrolled_students(name)
+
 
 @router.get('/{name}')
 def get_course_by_name(name: str = Path(..., name='Course name')):
     return course_ctrl.get_by_name(name)
-
-
-@router.get('/lectures/{name}')
-def get_lectures_by_course_name(name: str = Path(..., name='Course name')):
-    return course_ctrl.get_by_course_name(name)
 
 
 @router.put('/{name}')

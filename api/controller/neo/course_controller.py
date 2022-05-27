@@ -14,19 +14,19 @@ def get_all_courses():
     return to_return
 
 
-def get_by_name(name):
-    result = graph.nodes.match("Course", name=name).first()
-    return json.dumps(result, default=json_util.default)
-
-
-def get_by_course_name(name):
-    query = f'MATCH (c:Course {{name: "{name}"}})-[:HAS_LECTURE]->(lecture) return lecture.name'
+def get_all_enrolled_students(name):
+    query = f'MATCH (c:Course {{name: "{name}"}})<-[:IS_ENROLLED_IN_COURSE]-(s:Student) return s.name'
     result = graph.run(query)
     to_return = []
     for doc in result:
         json_doc = json.dumps(doc, default=json_util.default)
         to_return.append(json_doc)
     return to_return
+
+
+def get_by_name(name):
+    result = graph.nodes.match("Course", name=name).first()
+    return json.dumps(result, default=json_util.default)
 
 
 def delete_by_name(name):
@@ -38,27 +38,23 @@ def delete_by_name(name):
         return True
 
 
-# TODO: still does not work
-def edit_course(name, editCourse: CourseUpdate):
-    onSale = editCourse.onSale
-    description = editCourse.description
-    level = editCourse.level
-    price = editCourse.price
-    isCoD = editCourse.isCourseOfTheDay
+def edit_course(name, course: CourseUpdate):
+    onSale = course.onSale
+    description = course.description
+    level = course.level
+    price = course.price
+    isCoD = course.isCourseOfTheDay
     tx = graph.begin()
     tx.run(
         f'MATCH (c:Course {{name: "{name}"}}) SET c.description= "{description}", c.onSale= {onSale}, c.level= {level},'
         f' c.price= {price}, c.isCourseOfTheDay= {isCoD} '
     )
-    courseNode = graph.nodes.match("Course", name=name)
-    if editCourse.lectureName is not None:
-        lectureNode = graph.nodes.match("Lecture", name=editCourse.lectureName).first()
-        lectureCourseRelShip = Relationship(courseNode, "HAS_LECTURE", lectureNode)
-        tx.create(lectureCourseRelShip)
-    if editCourse.teacherName is not None:
-        teacherNode = graph.nodes.match("Teacher", name=editCourse.teacherName).first()
-        CourseTeacherRelship = Relationship(teacherNode, "TEACHES", courseNode)
-        tx.create(CourseTeacherRelship)
+    if course.lectureName is not None:
+        graph.run(
+            f'MATCH (c:Course {{name: "{name}"}}), (l:Lecture {{name: "{course.lectureName}"}}) CREATE (c)-[r:HAS_LECTURE]->(l)')
+    if course.teacherName is not None:
+        graph.run(
+            f'MATCH (c:Course {{name: "{name}"}}), (t:Teacher {{name: "{course.teacherName}"}}) CREATE (c)-[r:TAUGHT_BY]->(t)')
     result = tx.commit()
     if result is None:
         return True

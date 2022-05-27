@@ -18,6 +18,16 @@ def get_lecture_by_name(name: str = Path(..., name='Lecture name')):
     return lecture_ctrl.get_by_name(name)
 
 
+@router.get('/course/names/{name}')
+def get_all_lectures_for_course_names(name: str = Path(..., name='Course name')):
+    return lecture_ctrl.get_all_lectures_for_course_names(name)
+
+
+@router.get('/course/full/{name}')
+def get_all_lectures_for_course_full(name: str = Path(..., name='Course name')):
+    return lecture_ctrl.get_all_lectures_for_course_full(name)
+
+
 @router.put('/{name}')
 def edit_lecture(lecture: LectureUpdate, name: str = Path(..., name='Lecture name')):
     return lecture_ctrl.edit_lecture(name, lecture)
