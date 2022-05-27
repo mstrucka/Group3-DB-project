@@ -14,6 +14,26 @@ def get_all_resources():
     return to_return
 
 
+def get_all_resources_for_lecture_names(lectureName):
+    query = f'MATCH (l:Lecture {{name: "{lectureName}"}})-[:HAS_RESOURCE]->(r:Resource) return r.name'
+    result = graph.run(query)
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
+
+
+def get_all_resources_for_lecture_full(lectureName):
+    query = f'MATCH (l:Lecture {{name: "{lectureName}"}})-[:HAS_RESOURCE]->(r:Resource) return r'
+    result = graph.run(query)
+    to_return = []
+    for doc in result:
+        json_doc = json.dumps(doc, default=json_util.default)
+        to_return.append(json_doc)
+    return to_return
+
+
 def get_by_name(name):
     result = graph.nodes.match("Resource", name=name).first()
     return json.dumps(result, default=json_util.default)
@@ -28,7 +48,6 @@ def delete_by_name(name):
         return True
 
 
-# TODO: still does not work
 def edit_resource(name, resource: ResourceUpdate):
     tx = graph.begin()
     if resource.uri is not None:
@@ -38,20 +57,19 @@ def edit_resource(name, resource: ResourceUpdate):
         )
         return result.stats()
     elif resource.lectureName is not None:
-        resourceNode = graph.nodes.match("Resource", name=name)
-        resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", resource.lectureName)
-        tx.create(resourceRelship)
+        graph.run(
+            f'MATCH (l:Lecture {{name: "{resource.lectureName}"}}), (r:Resource {{name: "{name}"}}) CREATE (l)-[r:HAS_RESOURCE]->(r)')
     result = tx.commit()
     if result is None:
         return True
 
 
 def create_resource(resource: ResourceCreate):
-    resourceNode = Node("Resource", id=resource.id, name=resource.name, uri=resource.uri)
+    resourceNode = Node("Resource", name=resource.name, uri=resource.uri)
     tx = graph.begin()
     tx.create(resourceNode)
     if resource.lectureName is not None:
-        lectureNode = graph.nodes.match("Lecture", title=resource.lectureName).first()
+        lectureNode = graph.nodes.match("Lecture", name=resource.lectureName).first()
         resourceRelship = Relationship(resourceNode, "IS_FOR_LECTURE", lectureNode)
         tx.create(resourceRelship)
     result = tx.commit()

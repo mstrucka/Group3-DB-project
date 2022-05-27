@@ -24,6 +24,11 @@ def get_teacher_by_course_name(name: str = Path(..., name='Course name')):
     return teacher_ctrl.get_by_course_name(name)
 
 
+@router.get('/courses/all/{name}')
+def get_courses_taught_by_teacher(name: str = Path(..., name='Teacher name')):
+    return teacher_ctrl.get_courses_taught_by_teacher(name)
+
+
 @router.delete('/{name}')
 def delete_teacher(name: str = Path(..., name='Teacher name')):
     return teacher_ctrl.delete_by_name(name)

@@ -29,7 +29,7 @@ def authenticate_user(email: str, password: str):
     user = get_user(email)
     if not user:
         return False
-    if not verify_password(password, user.password_hash):
+    if not verify_password(password, get_pw_hash_from_database(email)):
         return False
     return user
 
@@ -43,6 +43,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def get_pw_hash_from_database(email):
+    password_hash = student_controller.get_password_hash_by_email(email)
+    if password_hash is None:
+        password_hash = teacher_controller.get_password_hash_by_email(email)
+    return password_hash
 
 
 def get_user(email: str):

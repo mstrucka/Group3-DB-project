@@ -12,25 +12,24 @@ router = APIRouter(
 def get_all_courses():
     return course_ctrl.get_all_courses()
 
-
-@router.get('/{title}')
-def get_course_by_title(title: str = Path(..., title='Course title')):
-    return course_ctrl.get_by_title(title)
-
-
-@router.get('/lectures/{title}')
-def get_lectures_by_course_title(title: str = Path(..., title='Course title')):
-    return course_ctrl.get_by_course_title(title)
+@router.get('/students/{name}')
+def get_all_enrolled_students(name: str = Path(..., name='Course name')):
+    return course_ctrl.get_all_enrolled_students(name)
 
 
-@router.put('/{title}')
-def edit_course(course: CourseUpdate, title: str = Path(..., name='Course title')):
-    return course_ctrl.edit_course(title, course)
+@router.get('/{name}')
+def get_course_by_name(name: str = Path(..., name='Course name')):
+    return course_ctrl.get_by_name(name)
 
 
-@router.delete('/{title}')
-def delete_course(title: str = Path(..., title='Course title')):
-    return course_ctrl.delete_by_title(title)
+@router.put('/{name}')
+def edit_course(course: CourseUpdate, name: str = Path(..., name='Course name')):
+    return course_ctrl.edit_course(name, course)
+
+
+@router.delete('/{name}')
+def delete_course(name: str = Path(..., name='Course name')):
+    return course_ctrl.delete_by_name(name)
 
 
 @router.post('/')
