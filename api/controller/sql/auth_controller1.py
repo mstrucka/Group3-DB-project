@@ -1,15 +1,13 @@
 from fastapi import Depends, HTTPException, status
 from api.models.auth import UserCreate, UserInDB, TokenData
 import api.controller.sql.user_controller as user_ctrl_sql
-import api.controller.mongo.user_controller as user_ctrl_mongo
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import JWTError, jwt
 import api.controller.sql.user_controller as user_ctrl
-from db.DbTypes import DbTypes
 
-oauth2_scheme_sql = OAuth2PasswordBearer(tokenUrl='/api/v1/sql/auth/token')
+oauth2_scheme_sql = OAuth2PasswordBearer(tokenUrl='/api/v1/mysql/auth/token')
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = '372c63277d2be40050086c25a2b0272e48930f0046f3f4195275b78ffc7daba0'

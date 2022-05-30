@@ -30,14 +30,13 @@ def get_by_name(name):
 
 def get_by_email(email):
     result = graph.nodes.match("Student", email=email).first()
-    return json.dumps(result, default=json_util.default)
+    result_as_dict = dict(result)
+    return result_as_dict
 
 #TODO
 def get_password_hash_by_email(email):
-    result = graph.run(f'MATCH (s:Student {{email: "{email}"}}) return s.password_hash')
-    print(json.dumps(result, default=json_util.default))
-    # print(result.keys())
-    return result["s.password_hash"]
+    result = graph.run(f'MATCH (s:Student {{email: "{email}"}}) return s.password_hash').evaluate()
+    return result
 
 
 def get_enrollments_full(name):
@@ -89,7 +88,7 @@ def edit_student(name, student: UserUpdate):
 
 def create_student(student: UserCreate):
     studentNode = Node("Student", name=student.name, email=student.email,
-                       born=student.born, password_hash=get_password_hash(student.password))
+                       born=student.born, password_hash=student.password)
     tx = graph.begin()
     tx.create(studentNode)
     if student.courseName is not None:

@@ -8,7 +8,7 @@ from api.controller.neo import student_controller, teacher_controller
 
 from db.neo4jdb.user import UserCreate
 
-oauth2_scheme_sql = OAuth2PasswordBearer(tokenUrl='/api/v1/neo/auth/token')
+oauth2_scheme_sql = OAuth2PasswordBearer(tokenUrl='/api/v1/neo4j/auth/token')
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_KEY = '372c63277d2be40050086c25a2b0272e48930f0046f3f4195275b78ffc7daba0'
@@ -29,7 +29,7 @@ def authenticate_user(email: str, password: str):
     user = get_user(email)
     if not user:
         return False
-    if not verify_password(password, get_pw_hash_from_database(email)):
+    if not verify_password(password, user['password_hash']):
         return False
     return user
 
