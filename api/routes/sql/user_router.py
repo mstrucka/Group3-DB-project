@@ -18,7 +18,9 @@ def get_user_enrollments(current_user: UserInDB = Depends(get_current_user)):
     return enrollment_ctrl.get_by_user(current_user.id)
 
 @router.get('/{id}')
-async def get_user_by_id(id: str = Path(..., title='User ID'), current_user: UserInDB = Depends(get_current_user)):
+async def get_user_by_id(
+    id: str = Path(..., title='User ID'), 
+    current_user: UserInDB = Depends(get_current_user)):
     return user_ctrl_sql.get_by_id(id)
 
 @router.delete('/{id}')
