@@ -6,37 +6,25 @@ from db.neo4jdb.neo import graph
 
 
 def get_all_resources():
-    result = graph.nodes.match("Resource")
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.nodes.match("Resource").all()
+    return result
 
 
 def get_all_resources_for_lecture_names(lectureName):
     query = f'MATCH (l:Lecture {{name: "{lectureName}"}})-[:HAS_RESOURCE]->(r:Resource) return r.name'
-    result = graph.run(query)
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.run(query).data()
+    return result
 
 
 def get_all_resources_for_lecture_full(lectureName):
     query = f'MATCH (l:Lecture {{name: "{lectureName}"}})-[:HAS_RESOURCE]->(r:Resource) return r'
-    result = graph.run(query)
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.run(query).data()
+    return result
 
 
 def get_by_name(name):
     result = graph.nodes.match("Resource", name=name).first()
-    return json.dumps(result, default=json_util.default)
+    return result
 
 
 def delete_by_name(name):

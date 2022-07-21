@@ -8,17 +8,13 @@ from db.neo4jdb.neo import graph
 
 
 def get_all_payments():
-    result = graph.nodes.match("Payment")
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=str)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.nodes.match("Payment").all()
+    return result
 
 
 def get_by_id(id):
     result = graph.nodes.match("Payment", id=id).first()
-    return json.dumps(result, default=str)
+    return result
 
 
 def delete_by_id(id):

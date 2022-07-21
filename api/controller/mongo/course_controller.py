@@ -66,8 +66,8 @@ async def get_avg_price_by_lecturer():
                 'avg_price': {
                     '$avg': '$price'
                 }
-            }
-        }
+            },
+        },
     ]
     res = await course_collection.aggregate(pipeline).to_list(length=None)
     res = [ CourseAvgPrice(**el) for el in res ]

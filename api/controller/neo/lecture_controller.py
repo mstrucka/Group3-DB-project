@@ -6,37 +6,25 @@ from db.neo4jdb.lecture import LectureCreate, LectureUpdate
 
 
 def get_all_lectures():
-    result = graph.nodes.match("Lecture")
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.nodes.match("Lecture").all()
+    return result
 
 
 def get_by_name(name):
     result = graph.nodes.match("Lecture", name=name).first()
-    return json.dumps(result, default=json_util.default)
+    return result
 
 
 def get_all_lectures_for_course_names(courseName):
     query = f'MATCH (c:Course {{name: "{courseName}"}})-[:HAS_LECTURE]->(l:Lecture) return l.name'
-    result = graph.run(query)
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.run(query).data()
+    return result
 
 
 def get_all_lectures_for_course_full(courseName):
     query = f'MATCH (c:Course {{name: "{courseName}"}})-[:HAS_LECTURE]->(l:Lecture) return l'
-    result = graph.run(query)
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.run(query).data()
+    return result
 
 
 def delete_by_name(name):

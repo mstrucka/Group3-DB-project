@@ -122,7 +122,7 @@ begin
     select avg(price)
     into average
     from course
-    where lecturer = userId;
+    where lecturer_id = userId;
     return average;
 end;
 

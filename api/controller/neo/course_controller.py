@@ -6,27 +6,18 @@ from db.neo4jdb.neo import graph
 
 
 def get_all_courses():
-    result = graph.nodes.match("Course")
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
-
+    result = graph.nodes.match("Course").all()
+    return result
 
 def get_all_enrolled_students(name):
     query = f'MATCH (c:Course {{name: "{name}"}})<-[:IS_ENROLLED_IN_COURSE]-(s:Student) return s.name'
-    result = graph.run(query)
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.run(query).data()
+    return result
 
 
 def get_by_name(name):
     result = graph.nodes.match("Course", name=name).first()
-    return json.dumps(result, default=json_util.default)
+    return result
 
 
 def delete_by_name(name):

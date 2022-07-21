@@ -13,50 +13,32 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-
 def get_all_students():
-    result = graph.nodes.match("Student")
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
-
+    result = graph.nodes.match("Student").all()
+    return result
 
 def get_by_name(name):
     result = graph.nodes.match("Student", name=name).first()
-    return json.dumps(result, default=json_util.default)
-
+    return result
 
 def get_by_email(email):
     result = graph.nodes.match("Student", email=email).first()
-    result_as_dict = dict(result)
-    return result_as_dict
+    return result
 
 #TODO
 def get_password_hash_by_email(email):
     result = graph.run(f'MATCH (s:Student {{email: "{email}"}}) return s.password_hash').evaluate()
     return result
 
-
 def get_enrollments_full(name):
     query= f'MATCH (s:Student {{name: "{name}"}})-[:IS_ENROLLED_IN_COURSE]->(course) return course'
-    result = graph.run(query)
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
-
+    result = graph.run(query).data()
+    return result
 
 def get_enrollments_names(name):
     query= f'MATCH (s:Student {{name: "{name}"}})-[:IS_ENROLLED_IN_COURSE]->(course) return course.name'
-    result = graph.run(query)
-    to_return = []
-    for doc in result:
-        json_doc = json.dumps(doc, default=json_util.default)
-        to_return.append(json_doc)
-    return to_return
+    result = graph.run(query).data()
+    return result
 
 
 def delete_by_name(name):
